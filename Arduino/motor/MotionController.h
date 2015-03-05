@@ -2,15 +2,12 @@
 #define MOTIONCONTROLLER_H
 
 #include "Arduino.h"
-#include <Pin.h>
-#include <PinChangeInt.h>
 #include <PID_v1.h>
 #include <DualVNH5019MotorShield.h>
 
 class MotionController {
 public:
     MotionController();
-    void initInterrupts();
     void initPid();
     static void M1CountInc();
     static void M2CountInc();

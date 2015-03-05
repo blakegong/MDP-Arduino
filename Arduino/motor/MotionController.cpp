@@ -1,8 +1,3 @@
-#include "Arduino.h"
-#include <Pin.h>
-#include <PinChangeInt.h>
-#include <PID_v1.h>
-#include <DualVNH5019MotorShield.h>
 #include <MotionController.h>
 
 const long brakeDist = 60;
@@ -13,13 +8,6 @@ MotionController::MotionController() {
 	M1Count = M2Count = 0;
 	this->motorShield.init();
 	initPid();
-	MotionController::initInterrupts();
-}
-
-void MotionController::initInterrupts()
-{
-	PCintPort::attachInterrupt(Pin::M1_ENCODER_A, MotionController::M1CountInc, CHANGE);
-	PCintPort::attachInterrupt(Pin::M2_ENCODER_A, MotionController::M2CountInc, CHANGE);
 }
 
 void MotionController::initPid() {
