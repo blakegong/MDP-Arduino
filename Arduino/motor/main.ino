@@ -4,8 +4,8 @@
 #include "MotionController.h"
 #include "SensorController.h"
 
-MotionController* mc;
-SensorController* sc;
+MotionController* motionController;
+SensorController* sensorController;
 
 int cycles = 0;
 
@@ -16,40 +16,40 @@ void setup()
     PCintPort::attachInterrupt(Constants::M1_ENCODER_A, MotionController::M1CountInc, CHANGE);
     PCintPort::attachInterrupt(Constants::M2_ENCODER_A, MotionController::M2CountInc, CHANGE);
 
-    mc = new MotionController();
-    sc = new SensorController();
+    motionController = new MotionController();
+    sensorController = new SensorController();
 }
 
 void loop() {
-    // if (sc->getIRGrids(Constants::IR_FL) >= 3)
-    //     mc->moveForwardGrids(1);
+    // if (sensorController->getIRGrids(Constants::IR_FL) >= 3)
+    //     motionController->moveForwardGrids(1);
     // else
-    //     mc->turnLeft();
+    //     motionController->turnLeft();
     cycles++;
-    // Serial.println(sc->getIRGrids(Constants::IR_SHORT_1));
-    // Serial.println(sc->getIRShortOptimizedCM(Constants::IR_SHORT_1));
-    // Serial.println(sc->getUlCM(Constants::UL1_PWM, Constants::UL1_TRIG));
-    // mc->moveForward(576);
-    // mc->turnLeft();
-    // mc->moveForward(576);
-    // mc->turnRight();
-    // mc->moveForward(576);
-    // mc->turnRight();
-    // mc->moveForward(576);
-    // mc->turnRight();
-    // mc->moveForward(576);
-    // mc->turnRight();
-    // mc->moveForward(576);
-    // mc->turnLeft();
-    // mc->moveForward(576);
-    // mc->turnLeft();
-    // mc->moveForward(576);
-    // mc->turnLeft();
-    // mc->moveForward(580);
-    // mc->spinMotor(150);
-    // mc->readCounts();
-    // mc->turnLeft();
-    // mc->turnRight();
+    // Serial.println(sensorController->getIRGrids(Constants::IR_SHORT_1));
+    // Serial.println(sensorController->getIRShortOptimizedCM(Constants::IR_SHORT_1));
+    // Serial.println(sensorController->getUlCM(Constants::UL1_PWM, Constants::UL1_TRIG));
+    // motionController->moveForward(576);
+    // motionController->turnLeft();
+    // motionController->moveForward(576);
+    // motionController->turnRight();
+    // motionController->moveForward(576);
+    // motionController->turnRight();
+    // motionController->moveForward(576);
+    // motionController->turnRight();
+    // motionController->moveForward(576);
+    // motionController->turnRight();
+    // motionController->moveForward(576);
+    // motionController->turnLeft();
+    // motionController->moveForward(576);
+    // motionController->turnLeft();
+    // motionController->moveForward(576);
+    // motionController->turnLeft();
+    // motionController->moveForward(580);
+    // motionController->spinMotor(150);
+    // motionController->readCounts();
+    // motionController->turnLeft();
+    // motionController->turnRight();
     // if (cycles >= 10)
     // while (1);
     delay(100);

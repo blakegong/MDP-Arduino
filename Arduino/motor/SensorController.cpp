@@ -12,13 +12,13 @@ void SensorController::initIR() {
 }
 
 void SensorController::initUltrasonic() {
-    pinMode(Constants::UL1_TRIG, OUTPUT);                    // A low pull on pin COMP/TRIG
-    digitalWrite(Constants::UL1_TRIG, HIGH);                 // Set to HIGH
-    pinMode(Constants::UL2_TRIG, OUTPUT);                    // A low pull on pin COMP/TRIG
-    digitalWrite(Constants::UL2_TRIG, HIGH);                 // Set to HIGH
+    pinMode(Constants::UL1_TRIG, OUTPUT);
+    digitalWrite(Constants::UL1_TRIG, HIGH);
+    pinMode(Constants::UL2_TRIG, OUTPUT);
+    digitalWrite(Constants::UL2_TRIG, HIGH);
 
-    pinMode(Constants::UL1_PWM, INPUT);                      // Sending Enable PWM mode command
-    pinMode(Constants::UL2_PWM, INPUT);                      // Sending Enable PWM mode command
+    pinMode(Constants::UL1_PWM, INPUT);
+    pinMode(Constants::UL2_PWM, INPUT);
 }
 
 unsigned char SensorController::getSensorFeedbackHighByte() {
@@ -40,6 +40,7 @@ unsigned char SensorController::getSensorFeedbackLowByte() {
 }
 
 unsigned char SensorController::getIRGrids(unsigned char pin) {
+    // TODO: ditch readings larger than x grids
     float offset = 0;
     switch (pin) {
     case Constants::IR_SHORT_FL:
@@ -75,14 +76,14 @@ bool getUl(unsigned char ulPwm, unsigned char ulTrig) {
 }
 
 float SensorController::getUlCM(unsigned char ulPwm, unsigned char ulTrig) {
-    uint8_t EnPwmCmd[4] = {0x44, 0x02, 0xbb, 0x01}; // distance measure command
+    uint8_t EnPwmCmd[4] = {0x44, 0x02, 0xbb, 0x01}; 
     digitalWrite(ulTrig, LOW);
-    digitalWrite(ulTrig, HIGH);               // reading Pin PWM will output pulses
+    digitalWrite(ulTrig, HIGH);       
 
     unsigned long distance = pulseIn(ulPwm, LOW);
 
     if (distance == 50000) {          // the reading is invalid.
-        Serial.print("Invalid");
+        // Serial.print("Invalid");
     } else {
         return (float)distance / 50.0;       // every 50us low level stands for 1cm
     }

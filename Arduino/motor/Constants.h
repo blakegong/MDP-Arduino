@@ -2,6 +2,7 @@
 #define CONSTANTS_H
 
 #include "Arduino.h"
+
 class Constants {
 public:
 	// Digital Pins
@@ -35,4 +36,5 @@ public:
 
 
 };
+
 #endif

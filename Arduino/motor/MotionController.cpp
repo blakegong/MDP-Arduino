@@ -1,6 +1,6 @@
 #include <MotionController.h>
 
-const long brakeDist = 60;
+const long brakeTicks = 60;
 volatile long MotionController::M1Count = 0;
 volatile long MotionController::M2Count = 0;
 
@@ -32,9 +32,9 @@ void MotionController::M2CountInc() {
 	M2Count++;
 }
 
-void MotionController::moveForward(long dist) {
+void MotionController::moveForward(long ticks) {
 	long prevCount = M1Count = M2Count = 0;
-	while (MotionController::M1Count + MotionController::M2Count - 2 * prevCount < 2 * (dist - brakeDist)) {
+	while (MotionController::M1Count + MotionController::M2Count - 2 * prevCount < 2 * (ticks - brakeTicks)) {
 		updatePid();
 		motorShield.setSpeeds(150 + this->OutputLeft - this->OutputRight, 150 - this->OutputLeft + this->OutputRight);
 
@@ -42,7 +42,7 @@ void MotionController::moveForward(long dist) {
 		printCounts();
 		Serial.println();
 	}
-	while (MotionController::M1Count + MotionController::M2Count - 2 * prevCount < 2 * dist) {
+	while (MotionController::M1Count + MotionController::M2Count - 2 * prevCount < 2 * ticks) {
 		updatePid();
 		motorShield.setBrakes(100 - this->OutputLeft + this->OutputRight, 100 + this->OutputLeft - this->OutputRight);
 
@@ -71,10 +71,10 @@ void MotionController::spinMotor(long speed) {
 }
 
 void MotionController::turnLeft() {
-	long dist = 783;
-	// long dist = 792;
+	long ticks = 783;
+	// long ticks = 792;
 	long prevCount = M1Count = M2Count = 0;
-	while (MotionController::M1Count + MotionController::M2Count - 2 * prevCount < 2 * (dist - brakeDist)) {
+	while (MotionController::M1Count + MotionController::M2Count - 2 * prevCount < 2 * (ticks - brakeTicks)) {
 		updatePid();
 		motorShield.setSpeeds(-150 - this->OutputLeft + this->OutputRight, 150 - this->OutputLeft + this->OutputRight);
 
@@ -82,7 +82,7 @@ void MotionController::turnLeft() {
 		printCounts();
 		Serial.println();
 	}
-	while (MotionController::M1Count + MotionController::M2Count - 2 * prevCount < 2 * dist) {
+	while (MotionController::M1Count + MotionController::M2Count - 2 * prevCount < 2 * ticks) {
 		updatePid();
 		motorShield.setBrakes(-100 + this->OutputLeft - this->OutputRight, 100 + this->OutputLeft - this->OutputRight);
 
@@ -93,9 +93,9 @@ void MotionController::turnLeft() {
 }
 
 void MotionController::turnRight() {
-	long dist = 792;
+	long ticks = 792;
 	long prevCount = M1Count = M2Count = 0;
-	while (MotionController::M1Count + MotionController::M2Count - 2 * prevCount < 2 * (dist - brakeDist)) {
+	while (MotionController::M1Count + MotionController::M2Count - 2 * prevCount < 2 * (ticks - brakeTicks)) {
 		updatePid();
 		motorShield.setSpeeds(150 + this->OutputLeft - this->OutputRight, -150 + this->OutputLeft - this->OutputRight);
 
@@ -103,7 +103,7 @@ void MotionController::turnRight() {
 		printCounts();
 		Serial.println();
 	}
-	while (MotionController::M1Count + MotionController::M2Count - 2 * prevCount < 2 * dist) {
+	while (MotionController::M1Count + MotionController::M2Count - 2 * prevCount < 2 * ticks) {
 		updatePid();
 		motorShield.setBrakes(100 - this->OutputLeft + this->OutputRight, -100 - this->OutputLeft + this->OutputRight);
 
