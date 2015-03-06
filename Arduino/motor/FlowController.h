@@ -6,17 +6,24 @@
 
 class FlowController {
 public:
-	FlowController(MotionController motionController, SensorController sensorController);
+	FlowController(MotionController* motionController, SensorController* sensorController);
 	void executeCommand();
+	void executeFastRun();
 	void fetchSerial();
+	void finish();
 	void startFSM();
 	void warmUp(); // Getting initial PID reading
+	void waitForFastRun();
+	void waitForStart();
 	void writeSerial();
 private:
 	int state;
-	static const int warmUpState = 0, waitingForStartState = 1, exploreState = 2, waitingForFastRunState = 3, fastRunState = 4, finishState = 5;
-	MotionController motionController;
-	SensorController sensorController;
+	static const int warmUpState = 0, waitForStartState = 1, fetchSerialState = 2, executeCommandState = 3, writeSerialState = 4, waitForFastRunState = 5, executeFastRunState = 6, finishState = 7;
+	MotionController* motionController;
+	SensorController* sensorController;
+
+	int movementType;   //Forward/Backward/Clockwise/AntiClockwise
+	int movementAmount; //could be grids or rotation angle
 };
 
 #endif
