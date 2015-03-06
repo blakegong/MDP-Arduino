@@ -19,7 +19,7 @@ public:
     void turnRight();
 
 private:
-    static const double kp = 0.5, ki = 0.25, kd = 0;
+    static const double kp = 0.5, ki = 1, kd = 0;
     static volatile long M1Count, M2Count;
     DualVNH5019MotorShield motorShield;
     double SetpointLeft, InputLeft, OutputLeft;
@@ -29,7 +29,6 @@ private:
     void updatePid();
     void printInOut();
     void printCounts();
-
 };
 
 #endif

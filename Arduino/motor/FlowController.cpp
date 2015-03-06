@@ -29,7 +29,7 @@ void FlowController::executeCommand() {
 		break;
 	default: ;
 	}
-	state = FlowController::fetchSerialState;
+	state = FlowController::writeSerialState;
 }
 
 void FlowController::executeFastRun() {
@@ -111,5 +111,6 @@ void FlowController::warmUp() {
 }
 
 void FlowController::writeSerial() {
-
+	Serial.println("pHello RaspberryPi, hello PC! ");
+	state = FlowController::fetchSerialState;
 }

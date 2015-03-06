@@ -17,8 +17,8 @@ void MotionController::initPid() {
 	this->SetpointLeft = 0;
 	this->SetpointRight = 0;
 
-	this->pidLeft->SetOutputLimits(0, 100);
-	this->pidRight->SetOutputLimits(0, 100);
+	this->pidLeft->SetOutputLimits(0, 50);
+	this->pidRight->SetOutputLimits(0, 50);
 
 	this->pidLeft->SetMode(AUTOMATIC);
 	this->pidRight->SetMode(AUTOMATIC);
@@ -43,7 +43,7 @@ void MotionController::moveForward(long ticks) {
 	long prevCount = M1Count + M2Count;
 	while (MotionController::M1Count + MotionController::M2Count - prevCount < 2 * (ticks - brakeTicks)) {
 		updatePid();
-		motorShield.setSpeeds(150 + this->OutputLeft - this->OutputRight, 150 - this->OutputLeft + this->OutputRight);
+		motorShield.setSpeeds(350 + this->OutputLeft - this->OutputRight, 350 - this->OutputLeft + this->OutputRight);
 
 		printInOut();
 		printCounts();
@@ -51,16 +51,18 @@ void MotionController::moveForward(long ticks) {
 	}
 	long M1prev = 0;
 	long M2prev = 0;
-	while (MotionController::M1Count + MotionController::M2Count - prevCount < 2 * ticks && MotionController::M1Count != M1prev && MotionController::M2Count != M2prev) {
-		updatePid();
-		motorShield.setBrakes(100 - this->OutputLeft + this->OutputRight, 100 + this->OutputLeft - this->OutputRight);
+	motorShield.setBrakes(100, 100);
+	// motorShield.setSpeeds(0, 0);
+	// while (MotionController::M1Count + MotionController::M2Count - prevCount < 2 * ticks && MotionController::M1Count != M1prev && MotionController::M2Count != M2prev) {
+	// 	updatePid();
+	// 	motorShield.setBrakes(100 - this->OutputLeft + this->OutputRight, 100 + this->OutputLeft - this->OutputRight);
 
-		printInOut();
-		printCounts();
-		Serial.println();
-		M1prev = MotionController::M1Count;
-		M2prev = MotionController::M2Count;
-	}
+	// 	printInOut();
+	// 	printCounts();
+	// 	Serial.println();
+	// 	M1prev = MotionController::M1Count;
+	// 	M2prev = MotionController::M2Count;
+	// }
 
 	// delay(300);
 	// Serial.print("Final readings: ");
