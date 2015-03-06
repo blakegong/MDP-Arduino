@@ -21,11 +21,11 @@ void FlowController::executeCommand() {
 		break;
 	case 67:
 		for (int i = 0; i < movementAmount; i++)
-			motionController->turnLeft();
+			motionController->turnRight();
 		break;
 	case 65:
 		for (int i = 0; i < movementAmount; i++)
-			motionController->turnRight();
+			motionController->turnLeft();
 		break;
 	default: ;
 	}
@@ -39,45 +39,26 @@ void FlowController::executeFastRun() {
 void FlowController::fetchSerial() {
 	String incomingControl = ""; //storing the control information
 
-	int count = 1;
 	while (state == FlowController::fetchSerialState) {
 		while (!Serial); //initialize Serial and wait for port to open
 		if (Serial.available() > 0) {
-			char i = 'x';  //just a dummy value for the sake of initialization
-			int exponent = 1;
-			count = 1;    //to keep track of index in the incomingControlString
+			unsigned char c = 'x';  //just a dummy value for the sake of initialization
+			int count = 1;    //to keep track of index in the incomingControlString
 			movementAmount = 0;
 
 			incomingControl = Serial.readString();  //Simulate the incoming Data from Raspberry Pi
-
-			//Serial.println("movement Amount is "+ incomingControl);
+			Serial.flush();
 
 			movementType = incomingControl[0];  //type of movement
-			//Serial.println(movementType);
 
 			//Detect the null character in the array
-			while (i != '\0')
-				i = incomingControl[++count];  //start from index 1
-
-			count = count - 1; //remove the count for the control character from Array
-			// e.g F234 means move forwards 234 grids.. remove 'F'
-
-			//construct a multiplier e.g: 10^2
-			for (int i = 0; i < (count - 1); i++) {
-				exponent *= 10;
-			}
-
-			for (int i = 1; i <= count; i++) {
-				movementAmount += (incomingControl[i] - '0') * exponent;
-				exponent /= 10;
+			c = incomingControl[count];
+			while (c != 10 && c != 0) {
+				movementAmount = movementAmount * 10 + c - 48;
+				c = incomingControl[++count];
 			}
 
 			state = FlowController::executeCommandState;
-
-			Serial.flush();
-
-
-			// Serial.println("---------------------------------------------------------------------");
 		}
 	}
 }

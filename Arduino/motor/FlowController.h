@@ -22,8 +22,8 @@ private:
 	MotionController* motionController;
 	SensorController* sensorController;
 
-	int movementType;   //Forward/Backward/Clockwise/AntiClockwise
-	int movementAmount; //could be grids or rotation angle
+	unsigned char movementType;   //Forward/Backward/Clockwise/AntiClockwise
+	unsigned char movementAmount; //could be grids or rotation angle
 };
 
 #endif
