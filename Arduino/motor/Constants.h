@@ -27,8 +27,8 @@ public:
 
 	// Analog Pins
 	static const unsigned char IR_SHORT_FL = A2;
-	static const unsigned char IR_SHORT_FM = A1;
-	static const unsigned char IR_SHORT_FR = A3;
+	static const unsigned char IR_SHORT_FM = A3;
+	static const unsigned char IR_SHORT_FR = A4;
 	static const unsigned char IR_SHORT_L = A5;
 
 	static const unsigned char IR_LONG_F = A4;

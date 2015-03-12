@@ -21,34 +21,50 @@ void SensorController::initUltrasonic() {
     pinMode(Constants::UL2_PWM, INPUT);
 }
 
-unsigned char SensorController::getSensorFeedbackHighByte() {
-    unsigned char c = 0;
-    c = this->getUl(Constants::UL1_PWM, Constants::UL1_TRIG) ? 1 : 0;
-    c = (c << 1) + this->getUl(Constants::UL2_PWM, Constants::UL2_TRIG) ? 1 : 0;
-    c = (c << 3) + this->getIRGrids(Constants::IR_LONG_F);
-    c = (c << 3) + this->getIRGrids(Constants::IR_LONG_L);
-    return c;
+void SensorController::printSensorFeedback() {
+    
+    // c = 48 + this->getUl(Constants::UL1_PWM, Constants::UL1_TRIG) ? 1 : 0;
+    // output += c;
+    // c = 48 + this->getUl(Constants::UL2_PWM, Constants::UL2_TRIG) ? 1 : 0;
+    // output += c;
+
+    unsigned char fl = 48 + this->getIRGrids(Constants::IR_SHORT_FL);
+    unsigned char fm = 48 + this->getIRGrids(Constants::IR_SHORT_FM);
+    unsigned char fr = 48 + this->getIRGrids(Constants::IR_SHORT_FR);
+
+    char output[9] = {'b', fl, fm, fr, '4', '4', '1', '1', '\0'};
+
+    // c = 48 + this->getIRGrids(Constants::IR_LONG_F);
+    // c = 48 + this->getIRGrids(Constants::IR_LONG_L);
+    Serial.write(output);
 }
 
-unsigned char SensorController::getSensorFeedbackLowByte() {
-    unsigned char c = 0;
-    unsigned char irFL = this->getIRGrids(Constants::IR_SHORT_FL);
-    // unsigned char irFM = this->getIRGrids(Constants::IR_SHORT_FM);
-    unsigned char irFR = this->getIRGrids(Constants::IR_SHORT_FR);
-    unsigned char irL = this->getIRGrids(Constants::IR_SHORT_L);
-    return c;
+void SensorController::printSensorFeedbackCalibration() {
+    // FL = 'A' + grid
+    String output = String();
+
+    output = output + "FL: " + this->getIRShortCM(Constants::IR_SHORT_FL) + " ";
+    output = output + "FM: " + this->getIRShortCM(Constants::IR_SHORT_FM) + " ";
+    Serial.println(output);
 }
 
 unsigned char SensorController::getIRGrids(unsigned char pin) {
     // TODO: ditch readings larger than x grids
     float offset = 0;
+    uint8_t grids = 0;
     switch (pin) {
     case Constants::IR_SHORT_FL:
         offset = 0;
-        return (unsigned char) ((getIRShortCM(pin) - offset + 5) / 10); // 5 for rounding
+        grids = (unsigned char) ((getIRShortCM(pin) - offset + 5) / 10); // 5 for rounding
+        return grids > 4 ? 'O' : grids;
     case Constants::IR_SHORT_FM:
         offset = 0;
-        return (unsigned char) ((getIRShortCM(pin) - offset + 5) / 10); // 5 for rounding
+        grids = (unsigned char) ((getIRShortCM(pin) - offset + 5) / 10); // 5 for rounding
+        return grids > 4 ? 'O' : grids;
+    case Constants::IR_SHORT_FR:
+        offset = 0;
+        grids = (unsigned char) ((getIRShortCM(pin) - offset + 5) / 10); // 5 for rounding
+        return grids > 4 ? 'O' : grids;
     }
 }
 
@@ -76,9 +92,9 @@ bool getUl(unsigned char ulPwm, unsigned char ulTrig) {
 }
 
 float SensorController::getUlCM(unsigned char ulPwm, unsigned char ulTrig) {
-    uint8_t EnPwmCmd[4] = {0x44, 0x02, 0xbb, 0x01}; 
+    uint8_t EnPwmCmd[4] = {0x44, 0x02, 0xbb, 0x01};
     digitalWrite(ulTrig, LOW);
-    digitalWrite(ulTrig, HIGH);       
+    digitalWrite(ulTrig, HIGH);
 
     unsigned long distance = pulseIn(ulPwm, LOW);
 

@@ -6,8 +6,8 @@
 class SensorController {
 public:
 	SensorController();
-	unsigned char getSensorFeedbackHighByte();
-	unsigned char getSensorFeedbackLowByte();
+	void printSensorFeedback();
+	void printSensorFeedbackCalibration();
 	unsigned char getIRGrids(unsigned char pin);
 	bool getUl(unsigned char ulPwm, unsigned char ulTrig);
 

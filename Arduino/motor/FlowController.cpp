@@ -111,6 +111,9 @@ void FlowController::warmUp() {
 }
 
 void FlowController::writeSerial() {
-	Serial.println("pHello RaspberryPi, hello PC! ");
-	state = FlowController::fetchSerialState;
+	// Serial.println("pHello RaspberryPi, hello PC! ");
+	while (state == FlowController::writeSerialState) {
+		sensorController->printSensorFeedback();
+		state = FlowController::fetchSerialState;
+	}
 }
