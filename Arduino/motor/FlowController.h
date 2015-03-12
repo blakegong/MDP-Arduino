@@ -22,8 +22,7 @@ private:
 	MotionController* motionController;
 	SensorController* sensorController;
 
-	unsigned char movementType;   //Forward/Backward/Clockwise/AntiClockwise
-	unsigned char movementAmount; //could be grids or rotation angle
+	String command;
 };
 
 #endif

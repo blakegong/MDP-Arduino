@@ -8,17 +8,17 @@
 class MotionController {
 public:
     MotionController();
+    void executeCommand(String command);
     void initPid();
     static void M1CountInc();
     static void M2CountInc();
     void moveForward(long);
     void moveForwardGrids(long);
-    void readCounts();
-    void spinMotor(long);
     void turnLeft();
     void turnRight();
 
 private:
+    static const bool isDebug = true;
     static const double kp = 0.5, ki = 1, kd = 0;
     static volatile long M1Count, M2Count;
     DualVNH5019MotorShield motorShield;
