@@ -18,9 +18,10 @@ public:
     void turnRight();
 
 private:
-    static const bool isDebug = true;
+    static const bool isDebug = false;
     static const double kp = 0.5, ki = 1, kd = 0;
     static volatile long M1Count, M2Count;
+    static const int setSpeed = 300;
     DualVNH5019MotorShield motorShield;
     double SetpointLeft, InputLeft, OutputLeft;
     double SetpointRight, InputRight, OutputRight;

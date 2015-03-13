@@ -31,10 +31,8 @@ public:
 	static const unsigned char IR_SHORT_FR = A4;
 	static const unsigned char IR_SHORT_L = A5;
 
-	static const unsigned char IR_LONG_F = A4;
+	// static const unsigned char IR_LONG_F = A4;
 	static const unsigned char IR_LONG_L = A4;
-
-
 };
 
 #endif

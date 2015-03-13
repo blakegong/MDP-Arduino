@@ -47,8 +47,8 @@ void MotionController::initPid() {
 	this->SetpointLeft = 0;
 	this->SetpointRight = 0;
 
-	this->pidLeft->SetOutputLimits(0, 50);
-	this->pidRight->SetOutputLimits(0, 50);
+	this->pidLeft->SetOutputLimits(0, 400 - MotionController::setSpeed);
+	this->pidRight->SetOutputLimits(0, 400 - MotionController::setSpeed);
 
 	this->pidLeft->SetMode(AUTOMATIC);
 	this->pidRight->SetMode(AUTOMATIC);
@@ -73,7 +73,7 @@ void MotionController::moveForward(long ticks) {
 	long prevCount = M1Count + M2Count;
 	while (MotionController::M1Count + MotionController::M2Count - prevCount < 2 * (ticks - brakeTicks)) {
 		updatePid();
-		motorShield.setSpeeds(350 + this->OutputLeft - this->OutputRight, 350 - this->OutputLeft + this->OutputRight);
+		motorShield.setSpeeds(MotionController::setSpeed + this->OutputLeft - this->OutputRight, MotionController::setSpeed - this->OutputLeft + this->OutputRight);
 
 		if (MotionController::isDebug) {
 			printInOut();

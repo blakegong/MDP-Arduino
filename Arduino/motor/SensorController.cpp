@@ -22,17 +22,14 @@ void SensorController::initUltrasonic() {
 }
 
 void SensorController::printSensorFeedback() {
-    
-    // c = 48 + this->getUl(Constants::UL1_PWM, Constants::UL1_TRIG) ? 1 : 0;
-    // output += c;
-    // c = 48 + this->getUl(Constants::UL2_PWM, Constants::UL2_TRIG) ? 1 : 0;
-    // output += c;
+    unsigned char sfl = 48 + this->getIRGrids(Constants::IR_SHORT_FL);
+    unsigned char sfm = 48 + this->getIRGrids(Constants::IR_SHORT_FM);
+    unsigned char sfr = 48 + this->getIRGrids(Constants::IR_SHORT_FR);
 
-    unsigned char fl = 48 + this->getIRGrids(Constants::IR_SHORT_FL);
-    unsigned char fm = 48 + this->getIRGrids(Constants::IR_SHORT_FM);
-    unsigned char fr = 48 + this->getIRGrids(Constants::IR_SHORT_FR);
+    unsigned char sl = 48 + this->getIRGrids(Constants::IR_SHORT_L);
+    unsigned char ll = 48 + this->getIRGrids(Constants::IR_LONG_L);
 
-    char output[9] = {'b', fl, fm, fr, '4', '4', '1', '1', '\0'};
+    char output[9] = {'b', sfl, sfm, sfr, '4', '4', '1', '1', '\0'};
 
     // c = 48 + this->getIRGrids(Constants::IR_LONG_F);
     // c = 48 + this->getIRGrids(Constants::IR_LONG_L);
