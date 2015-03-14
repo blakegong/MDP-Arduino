@@ -10,34 +10,48 @@ MotionController::MotionController() {
 	initPid();
 }
 
-void MotionController::executeCommand(String command) {
-	int count = 0;
-	int amount = 0;
+bool MotionController::executeCommand(String command) {
+	int count = 0, amount = 0;
+	unsigned char movement = 0;
 	while (command[count] != 10 && command[count] != 0) {
-		switch (command[count]) {
-		case 70:
-			this->moveForwardGrids(amount);
-			amount = 0;
-			break;
-		case 66:
-			this->moveForwardGrids(amount * 2);
-			amount = 0;
-			break;
-		case 67:
-			for (int i = 0; i < amount; i++)
-				this->turnRight();
-			amount = 0;
-			break;
-		case 65:
-			for (int i = 0; i < amount; i++)
-				this->turnLeft();
-			amount = 0;
-			break;
-		default:
+		if ((command[count] == 'F' || command[count] == 'B'
+		        || command[count] == 'C' || command[count] == 'A')) {
+			movement = command[count];
+		} else {
 			amount = amount * 10 + command[count] - 48;
+			if ((command[count + 1] == 10 || command[count + 1] == 0
+			        || command[count + 1] == 'F' || command[count + 1] == 'B'
+			        || command[count + 1] == 'C' || command[count + 1] == 'A')) {
+				switch (movement) {
+				case 'F':
+					this->moveForwardGrids(amount);
+					break;
+				case 'B':
+					this->moveBackwardGrids(amount);
+					break;
+				case 'C':
+					for (int i = 0; i < amount; i++)
+						this->turnRight();
+					break;
+				case 'A':
+					for (int i = 0; i < amount; i++)
+						this->turnLeft();
+					break;
+				}
+				amount = 0;
+			}
 		}
+
+		if (Constants::isDebug) {
+			Serial.print("count="); Serial.println(count);
+			Serial.print("movement="); Serial.println(movement);
+			Serial.print("amount="); Serial.println(amount);
+		}
+
 		count++;
 	}
+
+	return true;
 }
 
 void MotionController::initPid() {
@@ -62,6 +76,49 @@ void MotionController::M2CountInc() {
 	MotionController::M2Count++;
 }
 
+void MotionController::moveBackward(long ticks) {
+	if (M1Count > M2Count) {
+		M1Count = M1Count - M2Count;
+		M2Count = 0;
+	} else {
+		M2Count = M2Count - M1Count;
+		M1Count = 0;
+	}
+	long prevCount = M1Count + M2Count;
+	while (MotionController::M1Count + MotionController::M2Count - prevCount < 2 * (ticks - brakeTicks)) {
+		updatePid();
+		motorShield.setSpeeds(-MotionController::setSpeed - this->OutputLeft + this->OutputRight, -MotionController::setSpeed + this->OutputLeft - this->OutputRight);
+
+		if (Constants::isDebug) {
+			printInOut();
+			printCounts();
+			Serial.println();
+		}
+	}
+	long M1prev = 0;
+	long M2prev = 0;
+	// motorShield.setBrakes(100, 100);
+	for (int i = 0; i < 20; i++) {
+		motorShield.setBrakes(100, 100);
+		delay(5);
+		motorShield.setBrakes(300, 300);
+		delay(5);
+		motorShield.setBrakes(400, 400);
+		delay(5);
+	}
+
+	if (Constants::isDebug) {
+		delay(300);
+		Serial.print("Final readings: ");
+		printCounts();
+		Serial.println();
+	}
+}
+
+void MotionController::moveBackwardGrids(long grids) {
+	this->moveBackward(grids * 576);
+}
+
 void MotionController::moveForward(long ticks) {
 	if (M1Count > M2Count) {
 		M1Count = M1Count - M2Count;
@@ -75,7 +132,7 @@ void MotionController::moveForward(long ticks) {
 		updatePid();
 		motorShield.setSpeeds(MotionController::setSpeed + this->OutputLeft - this->OutputRight, MotionController::setSpeed - this->OutputLeft + this->OutputRight);
 
-		if (MotionController::isDebug) {
+		if (Constants::isDebug) {
 			printInOut();
 			printCounts();
 			Serial.println();
@@ -83,20 +140,17 @@ void MotionController::moveForward(long ticks) {
 	}
 	long M1prev = 0;
 	long M2prev = 0;
-	motorShield.setBrakes(100, 100);
-	// motorShield.setSpeeds(0, 0);
-	// while (MotionController::M1Count + MotionController::M2Count - prevCount < 2 * ticks && MotionController::M1Count != M1prev && MotionController::M2Count != M2prev) {
-	// 	updatePid();
-	// 	motorShield.setBrakes(100 - this->OutputLeft + this->OutputRight, 100 + this->OutputLeft - this->OutputRight);
+	// motorShield.setBrakes(100, 100);
+	for (int i = 0; i < 20; i++) {
+		motorShield.setBrakes(100, 100);
+		delay(5);
+		motorShield.setBrakes(300, 300);
+		delay(5);
+		motorShield.setBrakes(400, 400);
+		delay(5);
+	}
 
-	// 	printInOut();
-	// 	printCounts();
-	// 	Serial.println();
-	// 	M1prev = MotionController::M1Count;
-	// 	M2prev = MotionController::M2Count;
-	// }
-
-	if (MotionController::isDebug) {
+	if (Constants::isDebug) {
 		delay(300);
 		Serial.print("Final readings: ");
 		printCounts();
@@ -109,8 +163,10 @@ void MotionController::moveForwardGrids(long grids) {
 }
 
 void MotionController::turnLeft() {
-	long ticks = 783;
-	// long ticks = 792;
+	if (Constants::isDebug)
+		Serial.println("Entering MotionController::turnLeft.");
+	// long ticks = 810;
+	long ticks = 792;
 	if (M1Count > M2Count) {
 		M1Count = M1Count - M2Count;
 		M2Count = 0;
@@ -123,7 +179,7 @@ void MotionController::turnLeft() {
 		updatePid();
 		motorShield.setSpeeds(-150 - this->OutputLeft + this->OutputRight, 150 - this->OutputLeft + this->OutputRight);
 
-		if (MotionController::isDebug) {
+		if (Constants::isDebug) {
 			printInOut();
 			printCounts();
 			Serial.println();
@@ -135,7 +191,7 @@ void MotionController::turnLeft() {
 		updatePid();
 		motorShield.setBrakes(-100 + this->OutputLeft - this->OutputRight, 100 + this->OutputLeft - this->OutputRight);
 
-		if (MotionController::isDebug) {
+		if (Constants::isDebug) {
 			printInOut();
 			printCounts();
 			Serial.println();
@@ -143,9 +199,14 @@ void MotionController::turnLeft() {
 		M1prev = MotionController::M1Count;
 		M2prev = MotionController::M2Count;
 	}
+	if (Constants::isDebug)
+		Serial.println("Exiting MotionController::turnLeft.");
 }
 
 void MotionController::turnRight() {
+	if (Constants::isDebug)
+		Serial.println("Entering MotionController::turnRight.");
+	// long ticks = 810;
 	long ticks = 792;
 	if (M1Count > M2Count) {
 		M1Count = M1Count - M2Count;
@@ -159,9 +220,11 @@ void MotionController::turnRight() {
 		updatePid();
 		motorShield.setSpeeds(150 + this->OutputLeft - this->OutputRight, -150 + this->OutputLeft - this->OutputRight);
 
-		printInOut();
-		printCounts();
-		// Serial.println();
+		if (Constants::isDebug) {
+			printInOut();
+			printCounts();
+			Serial.println();
+		}
 	}
 	long M1prev = 0;
 	long M2prev = 0;
@@ -169,7 +232,7 @@ void MotionController::turnRight() {
 		updatePid();
 		motorShield.setBrakes(100 - this->OutputLeft + this->OutputRight, -100 - this->OutputLeft + this->OutputRight);
 
-		if (MotionController::isDebug) {
+		if (Constants::isDebug) {
 			printInOut();
 			printCounts();
 			Serial.println();
@@ -177,6 +240,8 @@ void MotionController::turnRight() {
 		M1prev = MotionController::M1Count;
 		M2prev = MotionController::M2Count;
 	}
+	if (Constants::isDebug)
+		Serial.println("Exiting MotionController::turnRight.");
 }
 
 void MotionController::printInOut() {

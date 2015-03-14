@@ -29,11 +29,12 @@ void SensorController::printSensorFeedback() {
     unsigned char sl = 48 + this->getIRGrids(Constants::IR_SHORT_L);
     unsigned char ll = 48 + this->getIRGrids(Constants::IR_LONG_L);
 
-    char output[9] = {'b', sfl, sfm, sfr, '4', '4', '1', '1', '\0'};
+    char output[9] = {'p', sfl, '9', sfr, sl, '4', '1', '1', '\0'};
 
     // c = 48 + this->getIRGrids(Constants::IR_LONG_F);
     // c = 48 + this->getIRGrids(Constants::IR_LONG_L);
-    Serial.write(output);
+    Serial.println(output);
+    Serial.flush();
 }
 
 void SensorController::printSensorFeedbackCalibration() {
@@ -42,6 +43,7 @@ void SensorController::printSensorFeedbackCalibration() {
 
     output = output + "FL: " + this->getIRShortCM(Constants::IR_SHORT_FL) + " ";
     output = output + "FM: " + this->getIRShortCM(Constants::IR_SHORT_FM) + " ";
+    output = output + "FR: " + this->getIRShortCM(Constants::IR_SHORT_FR) + " ";
     Serial.println(output);
 }
 
@@ -52,16 +54,20 @@ unsigned char SensorController::getIRGrids(unsigned char pin) {
     switch (pin) {
     case Constants::IR_SHORT_FL:
         offset = 0;
-        grids = (unsigned char) ((getIRShortCM(pin) - offset + 5) / 10); // 5 for rounding
-        return grids > 4 ? 'O' : grids;
+        grids = (unsigned char) ((getIRShortCM(pin) + 2 + 5) / 10); // 5 for rounding
+        return grids > 4 ? 9 : grids;
     case Constants::IR_SHORT_FM:
         offset = 0;
-        grids = (unsigned char) ((getIRShortCM(pin) - offset + 5) / 10); // 5 for rounding
-        return grids > 4 ? 'O' : grids;
+        grids = (unsigned char) ((getIRShortCM(pin) - 9 + 5) / 10); // 5 for rounding
+        return grids > 4 ? 9 : grids;
     case Constants::IR_SHORT_FR:
         offset = 0;
-        grids = (unsigned char) ((getIRShortCM(pin) - offset + 5) / 10); // 5 for rounding
-        return grids > 4 ? 'O' : grids;
+        grids = (unsigned char) ((getIRShortCM(pin) - 7 + 5) / 10); // 5 for rounding
+        return grids > 4 ? 9 : grids;
+    case Constants::IR_SHORT_L:
+        offset = 0;
+        grids = (unsigned char) ((getIRShortCM(pin) - 7 + 5) / 10); // 5 for rounding
+        return grids > 4 ? 9 : grids;
     }
 }
 

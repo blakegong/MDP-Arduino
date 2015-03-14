@@ -2,26 +2,28 @@
 #define MOTIONCONTROLLER_H
 
 #include "Arduino.h"
+#include <Constants.h>
 #include <PID_v1.h>
 #include <DualVNH5019MotorShield.h>
 
 class MotionController {
 public:
     MotionController();
-    void executeCommand(String command);
+    bool executeCommand(String command);
     void initPid();
     static void M1CountInc();
     static void M2CountInc();
+    void moveBackward(long);
+    void moveBackwardGrids(long);
     void moveForward(long);
     void moveForwardGrids(long);
     void turnLeft();
     void turnRight();
 
 private:
-    static const bool isDebug = false;
     static const double kp = 0.5, ki = 1, kd = 0;
     static volatile long M1Count, M2Count;
-    static const int setSpeed = 300;
+    static const int setSpeed = 250;
     DualVNH5019MotorShield motorShield;
     double SetpointLeft, InputLeft, OutputLeft;
     double SetpointRight, InputRight, OutputRight;
