@@ -9,7 +9,7 @@ public:
 	void printSensorFeedback();
 	void printSensorFeedbackCalibration();
 	unsigned char getIRGrids(unsigned char pin);
-	bool getUl(unsigned char ulPwm, unsigned char ulTrig);
+	int getUl(unsigned char ulPwm, unsigned char ulTrig);
 
 private:
 	int getAnalogReading(unsigned char pin);

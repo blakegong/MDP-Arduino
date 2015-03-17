@@ -29,7 +29,12 @@ void SensorController::printSensorFeedback() {
     unsigned char sl = 48 + this->getIRGrids(Constants::IR_SHORT_L);
     unsigned char ll = 48 + this->getIRGrids(Constants::IR_LONG_L);
 
-    char output[9] = {'p', sfl, '9', sfr, sl, '4', '1', '1', '\0'};
+    unsigned char l = 48 + sl >= 4 ? ll : sl;
+
+    unsigned char ull = 48 + this->getUl(Constants::UL1_PWM, Constants::UL1_TRIG);
+    unsigned char ulr = 48 + this->getUl(Constants::UL2_PWM, Constants::UL2_TRIG);
+
+    char output[8] = {'p', sfl, sfm, sfr, l, ull, ulr, '\0'};
 
     // c = 48 + this->getIRGrids(Constants::IR_LONG_F);
     // c = 48 + this->getIRGrids(Constants::IR_LONG_L);
@@ -44,6 +49,13 @@ void SensorController::printSensorFeedbackCalibration() {
     output = output + "FL: " + this->getIRShortCM(Constants::IR_SHORT_FL) + " ";
     output = output + "FM: " + this->getIRShortCM(Constants::IR_SHORT_FM) + " ";
     output = output + "FR: " + this->getIRShortCM(Constants::IR_SHORT_FR) + " ";
+
+    output = output + "SL: " + this->getIRShortCM(Constants::IR_SHORT_L) + " ";
+    output = output + "LL: " + this->getIRShortCM(Constants::IR_LONG_L) + " ";
+
+    output = output + "ULL: " + this->getUlCM(Constants::UL1_PWM, Constants::UL1_TRIG);
+    output = output + "ULR: " + this->getUlCM(Constants::UL2_PWM, Constants::UL2_TRIG);
+
     Serial.println(output);
 }
 
@@ -54,19 +66,23 @@ unsigned char SensorController::getIRGrids(unsigned char pin) {
     switch (pin) {
     case Constants::IR_SHORT_FL:
         offset = 0;
-        grids = (unsigned char) ((getIRShortCM(pin) + 2 + 5) / 10); // 5 for rounding
+        grids = (unsigned char) ((getIRShortCM(pin) + 2 + 4) / 10); // 5 for rounding
         return grids > 4 ? 9 : grids;
     case Constants::IR_SHORT_FM:
         offset = 0;
-        grids = (unsigned char) ((getIRShortCM(pin) - 9 + 5) / 10); // 5 for rounding
+        grids = (unsigned char) ((getIRShortCM(pin) + 1 + 4) / 10); // 5 for rounding
         return grids > 4 ? 9 : grids;
     case Constants::IR_SHORT_FR:
         offset = 0;
-        grids = (unsigned char) ((getIRShortCM(pin) - 7 + 5) / 10); // 5 for rounding
+        grids = (unsigned char) ((getIRShortCM(pin) + 2 + 4) / 10); // 5 for rounding
         return grids > 4 ? 9 : grids;
     case Constants::IR_SHORT_L:
         offset = 0;
-        grids = (unsigned char) ((getIRShortCM(pin) - 7 + 5) / 10); // 5 for rounding
+        grids = (unsigned char) ((getIRShortCM(pin) + 0 + 4) / 10); // 5 for rounding
+        return grids > 4 ? 9 : grids;
+    case Constants::IR_LONG_L:
+        offset = 0;
+        grids = (unsigned char) ((getIRShortCM(pin) + 0 + 4) / 10); // 5 for rounding
         return grids > 4 ? 9 : grids;
     }
 }
@@ -81,8 +97,8 @@ float SensorController::getIRShortCM(unsigned char pin) {
 
 int SensorController::getAnalogReading(unsigned char pin) {
     int sum;
-    analogRead(pin);
-    analogRead(pin);
+    sum = analogRead(pin); // Ditched
+    sum = analogRead(pin); // Ditched
     sum = analogRead(pin);
     sum += analogRead(pin);
     sum += analogRead(pin);
@@ -90,18 +106,21 @@ int SensorController::getAnalogReading(unsigned char pin) {
     return (sum >> 2);
 }
 
-bool getUl(unsigned char ulPwm, unsigned char ulTrig) {
-
+int SensorController::getUl(unsigned char ulPwm, unsigned char ulTrig) {
+    if (this->getUlCM(ulPwm, ulTrig) > 15)
+        return 1;
+    else
+        return 0;
 }
 
 float SensorController::getUlCM(unsigned char ulPwm, unsigned char ulTrig) {
-    uint8_t EnPwmCmd[4] = {0x44, 0x02, 0xbb, 0x01};
+
     digitalWrite(ulTrig, LOW);
     digitalWrite(ulTrig, HIGH);
 
     unsigned long distance = pulseIn(ulPwm, LOW);
 
-    if (distance == 50000) {          // the reading is invalid.
+    if (distance >= 50000) {          // the reading is invalid.
         // Serial.print("Invalid");
     } else {
         return (float)distance / 50.0;       // every 50us low level stands for 1cm

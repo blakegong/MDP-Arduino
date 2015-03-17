@@ -23,9 +23,6 @@ void FlowController::fetchSerial() {
 			command = Serial.readString();  //Simulate the incoming Data from Raspberry Pi
 			Serial.flush();
 
-			// for (int i = 0; i < command.length(); i++)
-			// 	Serial.println((int)command[i]);
-
 			state = FlowController::executeCommandState;
 		}
 	}
@@ -71,7 +68,17 @@ void FlowController::waitForFastRun() {
 }
 
 void FlowController::waitForStart() {
+	while (state == FlowController::waitForStartState) {
+		while (!Serial); //initialize Serial and wait for port to open
+		if (Serial.available() > 0) {
+			command = Serial.readString();  //Simulate the incoming Data from Raspberry Pi
+			Serial.flush();
 
+			if (command.startsWith("START")) {
+				state = FlowController::writeSerialState;
+			}
+		}
+	}
 }
 
 void FlowController::warmUp() {
@@ -81,7 +88,6 @@ void FlowController::warmUp() {
 void FlowController::writeSerial() {
 	// Serial.println("pHello RaspberryPi, hello PC! ");
 	while (state == FlowController::writeSerialState) {
-		// Serial.write("pHello RPi!\n");
 		sensorController->printSensorFeedback();
 		// sensorController->printSensorFeedbackCalibration();
 		state = FlowController::fetchSerialState;

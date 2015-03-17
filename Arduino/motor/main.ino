@@ -24,7 +24,7 @@ void setup()
 }
 
 void loop() {
-	flowController->state = FlowController::fetchSerialState;
+	flowController->state = FlowController::waitForStartState;
+    // flowController->state = FlowController::writeSerialState;
     flowController->startFSM();
-    // Serial.write("pHello RPi!\n");
 }
