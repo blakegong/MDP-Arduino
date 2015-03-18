@@ -9,11 +9,11 @@ public:
 	// Digital 2   M1INA     	 Motor 1 *direction input A
 	static const unsigned char INA1 = 2;
 	// Digital 3   M1_ENCODER_A  Motor 1 *encoder input A
-	static const unsigned char M1_ENCODER_A = 3;
+	static const unsigned char ML_ENCODER_A = 3;
 	// Digital 4   M1INB	     Motor 1 *direction input B
 	static const unsigned char INB1 = 4;
 	// Digital 5   M2_ENCODER_A  Motor 2 *encoder input A
-	static const unsigned char M2_ENCODER_A = 5;
+	static const unsigned char MR_ENCODER_A = 5;
 	static const unsigned char UL2_PWM = 6;
 	// Digital 7   M2INA    	 Motor 2 *direction input A
 	static const unsigned char INA2 = 7;

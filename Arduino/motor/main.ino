@@ -14,17 +14,17 @@ void setup()
     Serial.begin(9600);
     Serial.setTimeout(2);
 
-    PCintPort::attachInterrupt(Constants::M1_ENCODER_A, MotionController::M1CountInc, CHANGE);
-    PCintPort::attachInterrupt(Constants::M2_ENCODER_A, MotionController::M2CountInc, CHANGE);
+    PCintPort::attachInterrupt(Constants::ML_ENCODER_A, MotionController::MLCountInc, CHANGE);
+    PCintPort::attachInterrupt(Constants::MR_ENCODER_A, MotionController::MRCountInc, CHANGE);
 
-    motionController = new MotionController();
     sensorController = new SensorController();
+    motionController = new MotionController(sensorController);
 
     flowController = new FlowController(motionController, sensorController);
 }
 
 void loop() {
-	flowController->state = FlowController::waitForStartState;
-    // flowController->state = FlowController::writeSerialState;
+    flowController->state = FlowController::waitForStartState;
+    // flowController->state = FlowController::testState;
     flowController->startFSM();
 }

@@ -43,47 +43,76 @@ void SensorController::printSensorFeedback() {
 }
 
 void SensorController::printSensorFeedbackCalibration() {
+    delay(100);
     // FL = 'A' + grid
     String output = String();
 
-    output = output + "FL: " + this->getIRShortCM(Constants::IR_SHORT_FL) + " ";
-    output = output + "FM: " + this->getIRShortCM(Constants::IR_SHORT_FM) + " ";
-    output = output + "FR: " + this->getIRShortCM(Constants::IR_SHORT_FR) + " ";
+    output = output + "FL: " + this->getAnalogReading(Constants::IR_SHORT_FL) + " ";
+    output = output + "FM: " + this->getAnalogReading(Constants::IR_SHORT_FM) + " ";
+    output = output + "FR: " + this->getAnalogReading(Constants::IR_SHORT_FR) + " ";
 
-    output = output + "SL: " + this->getIRShortCM(Constants::IR_SHORT_L) + " ";
-    output = output + "LL: " + this->getIRShortCM(Constants::IR_LONG_L) + " ";
+    output = output + "SL: " + this->getAnalogReading(Constants::IR_SHORT_L) + " ";
+    output = output + "LL: " + this->getAnalogReading(Constants::IR_LONG_L) + " ";
 
-    output = output + "ULL: " + this->getUlCM(Constants::UL1_PWM, Constants::UL1_TRIG);
-    output = output + "ULR: " + this->getUlCM(Constants::UL2_PWM, Constants::UL2_TRIG);
+    // output = output + "FL: " + this->getIRShortCM(Constants::IR_SHORT_FL) + " ";
+    // output = output + "FM: " + this->getIRShortCM(Constants::IR_SHORT_FM) + " ";
+    // output = output + "FR: " + this->getIRShortCM(Constants::IR_SHORT_FR) + " ";
+
+    // output = output + "SL: " + this->getIRShortCM(Constants::IR_SHORT_L) + " ";
+    // output = output + "LL: " + this->getIRShortCM(Constants::IR_LONG_L) + " ";
+
+    // output = output + "ULL: " + this->getUlCM(Constants::UL1_PWM, Constants::UL1_TRIG);
+    // output = output + "ULR: " + this->getUlCM(Constants::UL2_PWM, Constants::UL2_TRIG);
 
     Serial.println(output);
 }
 
 unsigned char SensorController::getIRGrids(unsigned char pin) {
-    // TODO: ditch readings larger than x grids
-    float offset = 0;
-    uint8_t grids = 0;
+    int reading = this->getAnalogReading(pin);
     switch (pin) {
     case Constants::IR_SHORT_FL:
-        offset = 0;
-        grids = (unsigned char) ((getIRShortCM(pin) + 2 + 4) / 10); // 5 for rounding
-        return grids > 4 ? 9 : grids;
+        if (reading > 400)
+            return 1;
+        else if (reading > 235)
+            return 2;
+        else if (reading > 160)
+            return 3;
+        else if (reading > 120)
+            return 4;
+        else
+            return 9;
     case Constants::IR_SHORT_FM:
-        offset = 0;
-        grids = (unsigned char) ((getIRShortCM(pin) + 1 + 4) / 10); // 5 for rounding
-        return grids > 4 ? 9 : grids;
+        if (reading > 415)
+            return 1;
+        else if (reading > 235)
+            return 2;
+        else
+            return 9;
     case Constants::IR_SHORT_FR:
-        offset = 0;
-        grids = (unsigned char) ((getIRShortCM(pin) + 2 + 4) / 10); // 5 for rounding
-        return grids > 4 ? 9 : grids;
+        if (reading > 390)
+            return 1;
+        else if (reading > 228)
+            return 2;
+        else if (reading > 168)
+            return 3;
+        else if (reading > 140)
+            return 4;
+        else
+            return 9;
     case Constants::IR_SHORT_L:
-        offset = 0;
-        grids = (unsigned char) ((getIRShortCM(pin) + 0 + 4) / 10); // 5 for rounding
-        return grids > 4 ? 9 : grids;
+        if (reading > 530)
+            return 1;
+        else if (reading > 265)
+            return 2;
+        else
+            return 9;
     case Constants::IR_LONG_L:
-        offset = 0;
-        grids = (unsigned char) ((getIRShortCM(pin) + 0 + 4) / 10); // 5 for rounding
-        return grids > 4 ? 9 : grids;
+        if (reading > 525)
+            return 1;
+        else if (reading > 262)
+            return 2;
+        else
+            return 9;
     }
 }
 

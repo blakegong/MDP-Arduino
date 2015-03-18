@@ -6,7 +6,7 @@
 
 class FlowController {
 public:
-	static const int warmUpState = 0, waitForStartState = 1, fetchSerialState = 2, executeCommandState = 3, writeSerialState = 4, waitForFastRunState = 5, executeFastRunState = 6, finishState = 7;
+	static const int warmUpState = 0, waitForStartState = 1, fetchSerialState = 2, executeCommandState = 3, writeSerialState = 4, waitForFastRunState = 5, executeFastRunState = 6, finishState = 7, testState = 100;
 	int state;
 	FlowController(MotionController* motionController, SensorController* sensorController);
 	void executeCommand();
@@ -14,6 +14,7 @@ public:
 	void fetchSerial();
 	void finish();
 	void startFSM();
+	void test();
 	void warmUp(); // Getting initial PID reading
 	void waitForFastRun();
 	void waitForStart();

@@ -7,8 +7,42 @@ FlowController::FlowController(MotionController* motionController, SensorControl
 
 void FlowController::executeCommand() {
 	while (state == FlowController::executeCommandState) {
-		if (motionController->executeCommand(command))
-			state = FlowController::writeSerialState;
+		int count = 0, amount = 0;
+		unsigned char movement = 0;
+		while (command[count] != 10 && command[count] != 0) {
+			if (command[count] >= 48 && command[count] <= 57)
+				amount = amount * 10 + command[count] - 48;
+			else
+				movement = command[count];
+
+			if ((command[count + 1] >= 'A' && command[count + 1] <= 'Z') || (command[count + 1] == 10 || command[count + 1] == 0)) {
+				motionController->resetCounts();
+				switch (movement) {
+				case 'F':
+					motionController->moveForwardGrids(amount);
+					break;
+				case 'B':
+					motionController->moveBackwardGrids(amount);
+					break;
+				case 'C':
+					for (int i = 0; i < amount; i++)
+						motionController->turn(true);
+					break;
+				case 'A':
+					for (int i = 0; i < amount; i++)
+						motionController->turn(false);
+					break;
+				case 'Z':
+					motionController->calibratePos();
+					break;
+				}
+				amount = 0;
+			}
+
+			count++;
+		}
+
+		state = FlowController::writeSerialState;
 	}
 }
 
@@ -47,6 +81,9 @@ void FlowController::startFSM() {
 		case FlowController::finishState:
 			this->finish();
 			break;
+		case FlowController::testState:
+			this->test();
+			break;
 		case FlowController::waitForFastRunState:
 			this->waitForFastRun();
 			break;
@@ -63,6 +100,11 @@ void FlowController::startFSM() {
 	}
 }
 
+void FlowController::test() {
+	motionController->calibratePos();
+	sensorController->printSensorFeedbackCalibration();
+}
+
 void FlowController::waitForFastRun() {
 
 }
@@ -74,7 +116,7 @@ void FlowController::waitForStart() {
 			command = Serial.readString();  //Simulate the incoming Data from Raspberry Pi
 			Serial.flush();
 
-			if (command.startsWith("START")) {
+			if (command.startsWith("S")) {
 				state = FlowController::writeSerialState;
 			}
 		}
@@ -89,7 +131,6 @@ void FlowController::writeSerial() {
 	// Serial.println("pHello RaspberryPi, hello PC! ");
 	while (state == FlowController::writeSerialState) {
 		sensorController->printSensorFeedback();
-		// sensorController->printSensorFeedbackCalibration();
 		state = FlowController::fetchSerialState;
 	}
 }
