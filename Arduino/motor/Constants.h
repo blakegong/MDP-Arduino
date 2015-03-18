@@ -35,6 +35,11 @@ public:
 	static const unsigned char IR_LONG_L = A1;
 
 	static const bool isDebug = false;
+
+	static const unsigned char DIRECT_F = 0;
+	static const unsigned char DIRECT_R = 1;
+	static const unsigned char DIRECT_B = 2;
+	static const unsigned char DIRECT_L = 3;
 };
 
 #endif

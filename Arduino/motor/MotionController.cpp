@@ -1,8 +1,9 @@
 #include <MotionController.h>
 
 const long brakeTicks = 60;
-volatile long MotionController::MLCount = 0;
-volatile long MotionController::MRCount = 0;
+
+volatile long MotionController::MLCount;
+volatile long MotionController::MRCount;
 
 MotionController::MotionController(SensorController* sensorController) {
 	this->sensorController = sensorController;
@@ -10,17 +11,44 @@ MotionController::MotionController(SensorController* sensorController) {
 	MotionController::MRCount = 0;
 	this->motorShield.init();
 	this->initPid();
+	this->direction = 0;
+	this->posX = 0;
+	this->posY = 0;
 }
 
-void MotionController::calibratePos() {
-	int l, r;
+void MotionController::calibratePos(int grids) {
+	int l, r, lTarget, rTarget;
+	switch (grids) {
+	case 1:
+		lTarget = 625;
+		rTarget = 620;
+		break;
+	case 2:
+		lTarget = 295;
+		rTarget = 292;
+		break;
+	case 3:
+		lTarget = 190;
+		rTarget = 185;
+		break;
+	default:
+		return;
+	}
 	do {
-		l = this->sensorController->getAnalogReading(Constants::IR_SHORT_FL) - 625;
-		r = this->sensorController->getAnalogReading(Constants::IR_SHORT_FR) - 620;
+		l = this->sensorController->getAnalogReading(Constants::IR_SHORT_FL) - lTarget;
+		r = this->sensorController->getAnalogReading(Constants::IR_SHORT_FR) - rTarget;
 		motorShield.setSpeeds(- 3 * l, - 3 * r);
 		delay(5);
 		motorShield.setBrakes(300, 300);
 	} while ((abs(l) > 5) || (abs(r) > 5));
+}
+
+int MotionController::getPosX() {
+	return this->posX;
+}
+
+int MotionController::getPosY() {
+	return this->posY;
 }
 
 void MotionController::initPid() {
@@ -47,6 +75,20 @@ void MotionController::MRCountInc() {
 
 void MotionController::moveBackwardGrids(long grids) {
 	this->moveTicks(grids * 576, false);
+	switch (this->direction) {
+	case Constants::DIRECT_F:
+		this->posY -= grids;
+		break;
+	case Constants::DIRECT_R:
+		this->posX -= grids;
+		break;
+	case Constants::DIRECT_B:
+		this->posY += grids;
+		break;
+	case Constants::DIRECT_L:
+		this->posX += grids;
+		break;
+	}
 }
 
 void MotionController::moveTicks(long ticks, bool isForward) {
@@ -116,6 +158,25 @@ void MotionController::moveTicks(long ticks, bool isForward) {
 
 void MotionController::moveForwardGrids(long grids) {
 	this->moveTicks(grids * 576, true);
+	switch (this->direction) {
+	case Constants::DIRECT_F:
+		this->posY += grids;
+		break;
+	case Constants::DIRECT_R:
+		this->posX += grids;
+		break;
+	case Constants::DIRECT_B:
+		this->posY -= grids;
+		break;
+	case Constants::DIRECT_L:
+		this->posX -= grids;
+		break;
+	}
+}
+
+void MotionController::setPosition(int posX, int posY) {
+	this->posX = posX;
+	this->posY = posY;
 }
 
 void MotionController::turn(bool isClockwise) {
@@ -157,6 +218,21 @@ void MotionController::turn(bool isClockwise) {
 		delay(5);
 		motorShield.setBrakes(400, 400);
 		delay(5);
+	}
+
+	switch (direction) {
+	case Constants::DIRECT_F:
+		direction = isClockwise ? Constants::DIRECT_R : Constants::DIRECT_L;
+		break;
+	case Constants::DIRECT_R:
+		direction = isClockwise ? Constants::DIRECT_B : Constants::DIRECT_F;
+		break;
+	case Constants::DIRECT_B:
+		direction = isClockwise ? Constants::DIRECT_L : Constants::DIRECT_R;
+		break;
+	case Constants::DIRECT_L:
+		direction = isClockwise ? Constants::DIRECT_F : Constants::DIRECT_B;
+		break;
 	}
 
 	if (Constants::isDebug)

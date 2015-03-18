@@ -33,11 +33,17 @@ void FlowController::executeCommand() {
 						motionController->turn(false);
 					break;
 				case 'Z':
-					motionController->calibratePos();
+					motionController->calibratePos(amount);
 					break;
 				}
 				amount = 0;
 			}
+
+			// Serial.print("X: ");
+			// Serial.print(motionController->getPosX());
+			// Serial.print("Y: ");
+			// Serial.print(motionController->getPosY());
+			// Serial.println();
 
 			count++;
 		}
@@ -101,7 +107,7 @@ void FlowController::startFSM() {
 }
 
 void FlowController::test() {
-	motionController->calibratePos();
+	motionController->calibratePos(1);
 	sensorController->printSensorFeedbackCalibration();
 }
 

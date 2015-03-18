@@ -12,11 +12,14 @@ public:
     MotionController(SensorController* sensorController);
     static void MLCountInc();
     static void MRCountInc();
-    void calibratePos();
+    void calibratePos(int grids);
+    int getPosX();
+    int getPosY();
     void moveBackwardGrids(long grids);
     void moveForwardGrids(long grids);
     void moveTicks(long ticks, bool isForward);
     void resetCounts();
+    void setPosition(int posX, int posY);
     void turn(bool isClockwise);
 
 private:
@@ -25,6 +28,7 @@ private:
     static const int setSpeed = 250;
     DualVNH5019MotorShield motorShield;
     SensorController* sensorController;
+    unsigned char direction; // 0:F 1:R 2:B 3:L
     int posX, posY;
     double SetpointLeft, InputLeft, OutputLeft;
     double SetpointRight, InputRight, OutputRight;
