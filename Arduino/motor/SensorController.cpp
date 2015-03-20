@@ -47,9 +47,9 @@ void SensorController::printSensorFeedbackCalibration() {
     // FL = 'A' + grid
     String output = String();
 
-    output = output + "FL: " + this->getAnalogReading(Constants::IR_SHORT_FL) + " ";
-    output = output + "FM: " + this->getAnalogReading(Constants::IR_SHORT_FM) + " ";
-    output = output + "FR: " + this->getAnalogReading(Constants::IR_SHORT_FR) + " ";
+    // output = output + "FL: " + this->getAnalogReading(Constants::IR_SHORT_FL) + " ";
+    // output = output + "FM: " + this->getAnalogReading(Constants::IR_SHORT_FM) + " ";
+    // output = output + "FR: " + this->getAnalogReading(Constants::IR_SHORT_FR) + " ";
 
     output = output + "SL: " + this->getAnalogReading(Constants::IR_SHORT_L) + " ";
     output = output + "LL: " + this->getAnalogReading(Constants::IR_LONG_L) + " ";
@@ -104,13 +104,23 @@ unsigned char SensorController::getIRGrids(unsigned char pin) {
             return 1;
         else if (reading > 265)
             return 2;
+        else if (reading > 160)
+            return 3;
+        else if (reading > 120)
+            return 4;
         else
             return 9;
     case Constants::IR_LONG_L:
-        if (reading > 525)
-            return 1;
-        else if (reading > 262)
+        if (reading > 540)
             return 2;
+        else if (reading > 415)
+            return 3;
+        else if (reading > 320)
+            return 4;
+        else if (reading > 245)
+            return 5;
+        else if (reading > 190)
+            return 6;
         else
             return 9;
     }

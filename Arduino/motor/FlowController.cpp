@@ -1,4 +1,5 @@
 #include <FlowController.h>
+#include <Constants.h>
 
 FlowController::FlowController(MotionController* motionController, SensorController* sensorController) {
 	this->motionController = motionController;
@@ -90,6 +91,9 @@ void FlowController::startFSM() {
 		case FlowController::testState:
 			this->test();
 			break;
+		case FlowController::testForCheckListState:
+			this->testForCheckList();
+			break;
 		case FlowController::waitForFastRunState:
 			this->waitForFastRun();
 			break;
@@ -107,8 +111,29 @@ void FlowController::startFSM() {
 }
 
 void FlowController::test() {
-	motionController->calibratePos(1);
-	sensorController->printSensorFeedbackCalibration();
+	// motionController->calibratePos(1);
+	// sensorController->printSensorFeedbackCalibration();
+	Serial.print("IR Long Left Reading: ");
+	Serial.println(sensorController->getIRLongCM(Constants::IR_LONG_L));
+	Serial.print("IR Short Left Reading: ");
+	Serial.println(sensorController->getIRShortCM(Constants::IR_SHORT_L));
+	delay(500);
+}
+
+void FlowController::testForCheckList() {
+	while (true) {
+		if (sensorController->getIRGrids(Constants::IR_SHORT_FM) == 1) {
+			motionController->turn(true);
+			motionController->moveForwardGrids(2);
+			motionController->turn(false);
+			motionController->moveForwardGrids(4);
+			motionController->turn(false);
+			motionController->moveForwardGrids(2);
+			motionController->turn(true);
+		} else {
+			motionController->moveForwardGrids(1);
+		}
+	}
 }
 
 void FlowController::waitForFastRun() {
