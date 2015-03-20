@@ -12,12 +12,12 @@ public:
 	unsigned char getIRGrids(unsigned char pin);
 	int getUl(unsigned char ulPwm, unsigned char ulTrig);
 
-	float getIRLongCM(unsigned char pin);
-	float getIRShortCM(unsigned char pin);
+	float getUlCM(unsigned char ulPwm, unsigned char ulTrig);
 
 private:
+	float getIRLongCM(unsigned char pin);
+	float getIRShortCM(unsigned char pin);
 	
-	float getUlCM(unsigned char ulPwm, unsigned char ulTrig);
 	void initIR();
 	void initUltrasonic();
 };

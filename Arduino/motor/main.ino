@@ -26,6 +26,5 @@ void setup()
 void loop() {
     flowController->state = FlowController::waitForStartState;
     // flowController->state = FlowController::testState;
-    // flowController->state = FlowController::testForCheckListState;
     flowController->startFSM();
 }

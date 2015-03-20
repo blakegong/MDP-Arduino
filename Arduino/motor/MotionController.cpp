@@ -40,8 +40,8 @@ void MotionController::calibratePos(int grids) {
 		motorShield.setSpeeds(- 3 * l, - 3 * r);
 		delay(5);
 		motorShield.setBrakes(300, 300);
-		delay(20);
-	} while ((abs(l) > 5) || (abs(r) > 5));
+		delay(10);
+	} while ((abs(l) > 3) || (abs(r) > 3));
 }
 
 int MotionController::getPosX() {

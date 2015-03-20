@@ -12,13 +12,13 @@ void SensorController::initIR() {
 }
 
 void SensorController::initUltrasonic() {
-    pinMode(Constants::UL1_TRIG, OUTPUT);
-    digitalWrite(Constants::UL1_TRIG, HIGH);
-    pinMode(Constants::UL2_TRIG, OUTPUT);
-    digitalWrite(Constants::UL2_TRIG, HIGH);
+    pinMode(Constants::UL_LEFT_TRIG, OUTPUT);
+    digitalWrite(Constants::UL_LEFT_TRIG, HIGH);
+    pinMode(Constants::UL_RIGHT_TRIG, OUTPUT);
+    digitalWrite(Constants::UL_RIGHT_TRIG, HIGH);
 
-    pinMode(Constants::UL1_PWM, INPUT);
-    pinMode(Constants::UL2_PWM, INPUT);
+    pinMode(Constants::UL_LEFT_PWM, INPUT);
+    pinMode(Constants::UL_RIGHT_PWM, INPUT);
 }
 
 void SensorController::printSensorFeedback() {
@@ -29,10 +29,10 @@ void SensorController::printSensorFeedback() {
     unsigned char sl = 48 + this->getIRGrids(Constants::IR_SHORT_L);
     unsigned char ll = 48 + this->getIRGrids(Constants::IR_LONG_L);
 
-    unsigned char l = 48 + sl >= 4 ? ll : sl;
+    unsigned char l = (sl >= 51 ? ll : sl);
 
-    unsigned char ull = 48 + this->getUl(Constants::UL1_PWM, Constants::UL1_TRIG);
-    unsigned char ulr = 48 + this->getUl(Constants::UL2_PWM, Constants::UL2_TRIG);
+    unsigned char ull = 48 + this->getUl(Constants::UL_LEFT_PWM, Constants::UL_LEFT_TRIG);
+    unsigned char ulr = 48 + this->getUl(Constants::UL_RIGHT_PWM, Constants::UL_RIGHT_TRIG);
 
     char output[8] = {'p', sfl, sfm, sfr, l, ull, ulr, '\0'};
 
@@ -61,8 +61,8 @@ void SensorController::printSensorFeedbackCalibration() {
     // output = output + "SL: " + this->getIRShortCM(Constants::IR_SHORT_L) + " ";
     // output = output + "LL: " + this->getIRShortCM(Constants::IR_LONG_L) + " ";
 
-    // output = output + "ULL: " + this->getUlCM(Constants::UL1_PWM, Constants::UL1_TRIG);
-    // output = output + "ULR: " + this->getUlCM(Constants::UL2_PWM, Constants::UL2_TRIG);
+    // output = output + "ULL: " + this->getUlCM(Constants::UL_LEFT_PWM, Constants::UL_LEFT_TRIG);
+    // output = output + "ULR: " + this->getUlCM(Constants::UL_RIGHT_PWM, Constants::UL_RIGHT_TRIG);
 
     Serial.println(output);
 }
@@ -146,7 +146,7 @@ int SensorController::getAnalogReading(unsigned char pin) {
 }
 
 int SensorController::getUl(unsigned char ulPwm, unsigned char ulTrig) {
-    if (this->getUlCM(ulPwm, ulTrig) > 15)
+    if (this->getUlCM(ulPwm, ulTrig) < 15)
         return 1;
     else
         return 0;

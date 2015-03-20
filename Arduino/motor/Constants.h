@@ -14,16 +14,16 @@ public:
 	static const unsigned char INB1 = 4;
 	// Digital 5   M2_ENCODER_A  Motor 2 *encoder input A
 	static const unsigned char MR_ENCODER_A = 5;
-	static const unsigned char UL2_PWM = 6;
+	static const unsigned char UL_RIGHT_PWM = 6;
 	// Digital 7   M2INA    	 Motor 2 *direction input A
 	static const unsigned char INA2 = 7;
 	// Digital 8   M2INB    	 Motor 2 *direction input B
 	static const unsigned char INB2 = 8;
 	// Digital 9   M1PWM	     Motor 1 *speed input
 	// Digital 10  M2PWM    	 Motor 2 *speed input
-	static const unsigned char UL1_PWM = 11;
-	static const unsigned char UL2_TRIG = 12;
-	static const unsigned char UL1_TRIG = 13;
+	static const unsigned char UL_LEFT_PWM = 11;
+	static const unsigned char UL_RIGHT_TRIG = 12;
+	static const unsigned char UL_LEFT_TRIG = 13;
 
 	// Analog Pins
 	static const unsigned char IR_SHORT_FL = A4;

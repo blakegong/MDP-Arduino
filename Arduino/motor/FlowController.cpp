@@ -59,9 +59,9 @@ void FlowController::executeFastRun() {
 
 void FlowController::fetchSerial() {
 	while (state == FlowController::fetchSerialState) {
-		while (!Serial); //initialize Serial and wait for port to open
+		while (!Serial);
 		if (Serial.available() > 0) {
-			command = Serial.readString();  //Simulate the incoming Data from Raspberry Pi
+			command = Serial.readString();
 			Serial.flush();
 
 			state = FlowController::executeCommandState;
@@ -91,9 +91,6 @@ void FlowController::startFSM() {
 		case FlowController::testState:
 			this->test();
 			break;
-		case FlowController::testForCheckListState:
-			this->testForCheckList();
-			break;
 		case FlowController::waitForFastRunState:
 			this->waitForFastRun();
 			break;
@@ -113,27 +110,19 @@ void FlowController::startFSM() {
 void FlowController::test() {
 	// motionController->calibratePos(1);
 	// sensorController->printSensorFeedbackCalibration();
-	Serial.print("IR Long Left Reading: ");
-	Serial.println(sensorController->getIRLongCM(Constants::IR_LONG_L));
-	Serial.print("IR Short Left Reading: ");
-	Serial.println(sensorController->getIRShortCM(Constants::IR_SHORT_L));
-	delay(500);
-}
+	Serial.print("UL Left Reading: ");
+	Serial.println(sensorController->getUlCM(Constants::UL_LEFT_PWM, Constants::UL_LEFT_TRIG));
 
-void FlowController::testForCheckList() {
-	while (true) {
-		if (sensorController->getIRGrids(Constants::IR_SHORT_FM) == 1) {
-			motionController->turn(true);
-			motionController->moveForwardGrids(2);
-			motionController->turn(false);
-			motionController->moveForwardGrids(4);
-			motionController->turn(false);
-			motionController->moveForwardGrids(2);
-			motionController->turn(true);
-		} else {
-			motionController->moveForwardGrids(1);
-		}
-	}
+	Serial.print("UL Right Reading: ");
+	Serial.println(sensorController->getUlCM(Constants::UL_RIGHT_PWM, Constants::UL_RIGHT_TRIG));
+
+	Serial.print("IR Short Front Middle Reading: ");
+	Serial.println(sensorController->getAnalogReading(Constants::IR_SHORT_FM));
+	// Serial.print("IR Long Left Reading: ");
+	// Serial.println(sensorController->getIRLongCM(Constants::IR_LONG_L));
+	// Serial.print("IR Short Left Reading: ");
+	// Serial.println(sensorController->getIRShortCM(Constants::IR_SHORT_L));
+	delay(500);
 }
 
 void FlowController::waitForFastRun() {
@@ -142,9 +131,9 @@ void FlowController::waitForFastRun() {
 
 void FlowController::waitForStart() {
 	while (state == FlowController::waitForStartState) {
-		while (!Serial); //initialize Serial and wait for port to open
+		while (!Serial);
 		if (Serial.available() > 0) {
-			command = Serial.readString();  //Simulate the incoming Data from Raspberry Pi
+			command = Serial.readString();
 			Serial.flush();
 
 			if (command.startsWith("S")) {
@@ -159,7 +148,6 @@ void FlowController::warmUp() {
 }
 
 void FlowController::writeSerial() {
-	// Serial.println("pHello RaspberryPi, hello PC! ");
 	while (state == FlowController::writeSerialState) {
 		sensorController->printSensorFeedback();
 		state = FlowController::fetchSerialState;
