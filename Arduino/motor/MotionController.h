@@ -25,7 +25,7 @@ public:
 private:
     static const double kp = 0.5, ki = 0.25, kd = 0;
     static volatile long MLCount, MRCount;
-    static const int setSpeed = 250;
+    static const int setSpeed = 300;
     DualVNH5019MotorShield motorShield;
     SensorController* sensorController;
     unsigned char direction; // 0:F 1:R 2:B 3:L

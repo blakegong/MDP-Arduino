@@ -20,16 +20,16 @@ void MotionController::calibratePos(int grids) {
 	int l, r, lTarget, rTarget;
 	switch (grids) {
 	case 1:
-		lTarget = 625;
-		rTarget = 620;
+		lTarget = 620;
+		rTarget = 602;
 		break;
 	case 2:
-		lTarget = 295;
-		rTarget = 292;
+		lTarget = 305;
+		rTarget = 300;
 		break;
 	case 3:
-		lTarget = 190;
-		rTarget = 185;
+		lTarget = 200;
+		rTarget = 199;
 		break;
 	default:
 		return;
@@ -37,10 +37,10 @@ void MotionController::calibratePos(int grids) {
 	do {
 		l = this->sensorController->getAnalogReading(Constants::IR_SHORT_FL) - lTarget;
 		r = this->sensorController->getAnalogReading(Constants::IR_SHORT_FR) - rTarget;
-		motorShield.setSpeeds(- 3 * l, - 3 * r);
+		motorShield.setSpeeds(- 8 * l, - 8 * r);
 		delay(5);
 		motorShield.setBrakes(300, 300);
-		delay(10);
+		delay(5);
 	} while ((abs(l) > 3) || (abs(r) > 3));
 }
 
@@ -75,7 +75,7 @@ void MotionController::MRCountInc() {
 }
 
 void MotionController::moveBackwardGrids(long grids) {
-	this->moveTicks(grids * 586, false);
+	this->moveTicks(grids * 572, false);
 	switch (this->direction) {
 	case Constants::DIRECT_F:
 		this->posY -= grids;
@@ -108,16 +108,24 @@ void MotionController::moveTicks(long ticks, bool isForward) {
 	}
 
 	long prevCount = MotionController::MLCount + MotionController::MRCount;
-	if (isForward) {
-		motorShield.setSpeeds(80, 80);
-		delay(100);
-		motorShield.setSpeeds(150, 150);
-		delay(50);
-	} else {
-		motorShield.setSpeeds(-80, -80);
-		delay(100);
-		motorShield.setSpeeds(-150, -150);
-		delay(50);
+	for (int i = 0; i < 20; i++) {
+		if (isForward) {
+			motorShield.setSpeeds(80 + this->OutputLeft - this->OutputRight, 80 - this->OutputLeft + this->OutputRight);
+		} else {
+			motorShield.setSpeeds(-80 - this->OutputLeft + this->OutputRight, -80 + this->OutputLeft - this->OutputRight);
+		}
+
+		updatePid();
+	}
+
+	for (int i = 0; i < 10; i++) {
+		if (isForward) {
+			motorShield.setSpeeds(150 + this->OutputLeft - this->OutputRight, 150 - this->OutputLeft + this->OutputRight);
+		} else {
+			motorShield.setSpeeds(-150 - this->OutputLeft + this->OutputRight, -150 + this->OutputLeft - this->OutputRight);
+		}
+
+		updatePid();
 	}
 
 	while (MotionController::MLCount + MotionController::MRCount - prevCount < 2 * (ticks - brakeTicks)) {
@@ -139,7 +147,7 @@ void MotionController::moveTicks(long ticks, bool isForward) {
 
 	// Braking
 	prevCount = 0;
-	while (MotionController::MLCount + MotionController::MRCount - prevCount > 2) {
+	while (MotionController::MLCount + MotionController::MRCount - prevCount > 1) {
 		prevCount = MotionController::MLCount + MotionController::MRCount;
 		motorShield.setBrakes(100, 100);
 		delay(5);
@@ -158,7 +166,7 @@ void MotionController::moveTicks(long ticks, bool isForward) {
 }
 
 void MotionController::moveForwardGrids(long grids) {
-	this->moveTicks(grids * 586, true);
+	this->moveTicks(grids * 555, true);
 	switch (this->direction) {
 	case Constants::DIRECT_F:
 		this->posY += grids;
@@ -184,7 +192,7 @@ void MotionController::turn(bool isClockwise) {
 	if (Constants::isDebug)
 		Serial.println("Entering MotionController::turn.");
 
-	long ticks = isClockwise ? 830 : 828;
+	long ticks = isClockwise ? 837 : 830;
 
 	if (MotionController::MLCount > MotionController::MRCount) {
 		MotionController::MLCount = MotionController::MLCount - MotionController::MRCount;

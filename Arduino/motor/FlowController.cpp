@@ -110,18 +110,18 @@ void FlowController::startFSM() {
 void FlowController::test() {
 	// motionController->calibratePos(1);
 	// sensorController->printSensorFeedbackCalibration();
+	
 	Serial.print("UL Left Reading: ");
 	Serial.println(sensorController->getUlCM(Constants::UL_LEFT_PWM, Constants::UL_LEFT_TRIG));
-
 	Serial.print("UL Right Reading: ");
 	Serial.println(sensorController->getUlCM(Constants::UL_RIGHT_PWM, Constants::UL_RIGHT_TRIG));
 
-	Serial.print("IR Short Front Middle Reading: ");
-	Serial.println(sensorController->getAnalogReading(Constants::IR_SHORT_FM));
-	// Serial.print("IR Long Left Reading: ");
-	// Serial.println(sensorController->getIRLongCM(Constants::IR_LONG_L));
-	// Serial.print("IR Short Left Reading: ");
-	// Serial.println(sensorController->getIRShortCM(Constants::IR_SHORT_L));
+	// Serial.print("IR Short Front Middle Reading: ");
+	// Serial.println(sensorController->getAnalogReading(Constants::IR_SHORT_FM));
+	// Serial.print("IR Short Front Left Reading: ");
+	// Serial.println(sensorController->getAnalogReading(Constants::IR_SHORT_FL));
+	// Serial.print("IR Short Front Right Reading: ");
+	// Serial.println(sensorController->getAnalogReading(Constants::IR_SHORT_FR));
 	delay(500);
 }
 
