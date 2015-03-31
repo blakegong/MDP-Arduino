@@ -12,7 +12,7 @@ public:
     MotionController(SensorController* sensorController);
     static void MLCountInc();
     static void MRCountInc();
-    void calibratePos(int grids);
+    int calibratePos(int grids);
     int getPosX();
     int getPosY();
     void moveBackwardGrids(long grids);
@@ -20,13 +20,19 @@ public:
     void moveTicks(long ticks, bool isForward);
     void resetCounts();
     void setPosition(int posX, int posY);
+    void setForwardTicks(int ticks);
+    void setBackwardTicks(int ticks);
+    void setClockwiseTicks(int ticks);
+    void setAntiClockwiseTicks(int ticks);
     void turn(bool isClockwise);
+    DualVNH5019MotorShield motorShield;
 
 private:
     static const double kp = 0.5, ki = 0.25, kd = 0;
     static volatile long MLCount, MRCount;
-    static const int setSpeed = 300;
-    DualVNH5019MotorShield motorShield;
+    static const int setSpeed = 350;
+    int forwardTicks, backwardTicks, clockwiseTicks, antiClockwiseTicks;
+    
     SensorController* sensorController;
     unsigned char direction; // 0:F 1:R 2:B 3:L
     int posX, posY;

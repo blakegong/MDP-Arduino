@@ -24,7 +24,8 @@ void setup()
 }
 
 void loop() {
-    flowController->state = FlowController::waitForStartState;
-    // flowController->state = FlowController::testState;
+    // flowController->state = FlowController::warmUpState;
+    // flowController->state = FlowController::waitForStartState;
+    flowController->state = FlowController::testState;
     flowController->startFSM();
 }

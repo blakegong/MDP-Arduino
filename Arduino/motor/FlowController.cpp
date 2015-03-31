@@ -17,7 +17,6 @@ void FlowController::executeCommand() {
 				movement = command[count];
 
 			if ((command[count + 1] >= 'A' && command[count + 1] <= 'Z') || (command[count + 1] == 10 || command[count + 1] == 0)) {
-				motionController->resetCounts();
 				switch (movement) {
 				case 'F':
 					motionController->moveForwardGrids(amount);
@@ -36,15 +35,12 @@ void FlowController::executeCommand() {
 				case 'Z':
 					motionController->calibratePos(amount);
 					break;
+				case 'S':
+					state = FlowController::writeSerialState;
+					break;
 				}
 				amount = 0;
 			}
-
-			// Serial.print("X: ");
-			// Serial.print(motionController->getPosX());
-			// Serial.print("Y: ");
-			// Serial.print(motionController->getPosY());
-			// Serial.println();
 
 			count++;
 		}
@@ -61,6 +57,7 @@ void FlowController::fetchSerial() {
 	while (state == FlowController::fetchSerialState) {
 		while (!Serial);
 		if (Serial.available() > 0) {
+			delay(10);
 			command = Serial.readString();
 			Serial.flush();
 
@@ -108,20 +105,29 @@ void FlowController::startFSM() {
 }
 
 void FlowController::test() {
-	// motionController->calibratePos(1);
+	// for(int i = 0; i < 400; i++) {
+	// 	motionController->motorShield.setSpeeds(i, i);
+	// 	// motionController->motorShield.setM1Speed(i);
+	// 	delay(10);
+	// }
+	motionController->motorShield.setSpeeds(350, 350);
+	// motionController->moveForwardGrids(1);
 	// sensorController->printSensorFeedbackCalibration();
-	
-	Serial.print("UL Left Reading: ");
-	Serial.println(sensorController->getUlCM(Constants::UL_LEFT_PWM, Constants::UL_LEFT_TRIG));
-	Serial.print("UL Right Reading: ");
-	Serial.println(sensorController->getUlCM(Constants::UL_RIGHT_PWM, Constants::UL_RIGHT_TRIG));
 
-	// Serial.print("IR Short Front Middle Reading: ");
-	// Serial.println(sensorController->getAnalogReading(Constants::IR_SHORT_FM));
-	// Serial.print("IR Short Front Left Reading: ");
-	// Serial.println(sensorController->getAnalogReading(Constants::IR_SHORT_FL));
-	// Serial.print("IR Short Front Right Reading: ");
-	// Serial.println(sensorController->getAnalogReading(Constants::IR_SHORT_FR));
+	// motionController->moveTicks(3000, true);
+
+	// Serial.print("UL Left Reading: ");
+	// Serial.println(sensorController->getUlCM(Constants::UL_LEFT_PWM, Constants::UL_LEFT_TRIG));
+	// delay(100);
+	// Serial.print("UL Right Reading: ");
+	// Serial.println(sensorController->getUlCM(Constants::UL_RIGHT_PWM, Constants::UL_RIGHT_TRIG));
+
+	// Serial.print("pIR Short Front Middle Reading: ");
+	// Serial.print(sensorController->getAnalogReading(Constants::IR_SHORT_FM));
+	Serial.print("IR Short Front Left Reading: ");
+	Serial.print(sensorController->getAnalogReading(Constants::IRS_FL));
+	Serial.print("IR Short Front Right Reading: ");
+	Serial.println(sensorController->getAnalogReading(Constants::IRS_FR));
 	delay(500);
 }
 
@@ -137,14 +143,78 @@ void FlowController::waitForStart() {
 			Serial.flush();
 
 			if (command.startsWith("S")) {
+				motionController->resetCounts();
 				state = FlowController::writeSerialState;
+			}
+
+			if (command.startsWith("C")) {
+				int amount = 0;
+				int count = 2;
+				while (command[count] != 10 && command[count] != 0) {
+					if (command[count] >= 48 && command[count] <= 57)
+						amount = amount * 10 + command[count] - 48;
+					count++;
+				}
+				switch (command[1]) {
+				case 'F':
+					motionController->setForwardTicks(amount);
+				case 'B':
+					motionController->setBackwardTicks(amount);
+				case 'C':
+					motionController->setClockwiseTicks(amount);
+				case 'A':
+					motionController->setAntiClockwiseTicks(amount);
+				}
 			}
 		}
 	}
 }
 
 void FlowController::warmUp() {
+	while (state == FlowController::warmUpState) {
+		motionController->calibratePos(1);
+		motionController->turn(false);
+		motionController->calibratePos(1);
+		motionController->turn(true);
+		motionController->calibratePos(1);
+		delay(500);
+		int clockwiseTicks = 760;
+		int antiClockwiseTicks = 760;
+		unsigned char offset = 64;
+		int caliResult = 0;
+		for (int i = 0; i < 6; i++) {
+			motionController->setClockwiseTicks(clockwiseTicks);
+			motionController->setAntiClockwiseTicks(antiClockwiseTicks);
 
+			motionController->turn(false);
+			// delay(500);
+			caliResult = motionController->calibratePos(1);
+			// delay(200);
+			if (caliResult > 0)
+				antiClockwiseTicks += offset;
+			else
+				antiClockwiseTicks -= offset;
+
+			motionController->turn(true);
+			// delay(500);
+			caliResult = motionController->calibratePos(1);
+			// delay(200);
+			if (caliResult < 0)
+				clockwiseTicks += offset;
+			else
+				clockwiseTicks -= offset;
+
+			offset /= 2;
+		}
+
+		Serial.print("Final clockwiseTicks: ");
+		Serial.print(clockwiseTicks);
+		Serial.print(" Final antiClockwiseTicks: ");
+		Serial.print(antiClockwiseTicks);
+		Serial.println();
+
+		state = FlowController::waitForStartState;
+	}
 }
 
 void FlowController::writeSerial() {
