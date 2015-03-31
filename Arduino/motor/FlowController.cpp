@@ -179,8 +179,8 @@ void FlowController::warmUp() {
 		motionController->turn(true);
 		motionController->calibratePos(1);
 		delay(500);
-		int clockwiseTicks = 760;
-		int antiClockwiseTicks = 760;
+		int clockwiseTicks = 730;
+		int antiClockwiseTicks = 730;
 		unsigned char offset = 64;
 		int caliResult = 0;
 		for (int i = 0; i < 6; i++) {

@@ -216,7 +216,7 @@ void MotionController::turn(bool isClockwise) {
 	}
 	long prevCount = MotionController::MLCount + MotionController::MRCount;
 	while (MotionController::MLCount + MotionController::MRCount - prevCount < 2 * ticks) {
-		int turnSpeed = 350;
+		int turnSpeed = 200;
 		if (isClockwise) {
 			motorShield.setSpeeds(turnSpeed + this->OutputLeft - this->OutputRight, -turnSpeed + this->OutputLeft - this->OutputRight);
 		} else {
