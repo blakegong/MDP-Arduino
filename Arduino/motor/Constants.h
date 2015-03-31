@@ -11,9 +11,9 @@ public:
 	// Digital 3   Timer2 Library
 	// Digital 4   M1INB	     Motor 1 *direction input B
 	static const unsigned char INB1 = 4;
-	// Digital 5   Serve Pin
+	// Digital 5   Servo Pin
 	static const unsigned char SERVO = 5;
-	static const unsigned char MR_ENCODER_A = 6;
+	static const unsigned char MR_ENCODER_A = 19;
 	// static const unsigned char UL_RIGHT_PWM = 6; //green
 	// Digital 7   M2INA    	 Motor 2 *direction input A
 	static const unsigned char INA2 = 7;
@@ -23,15 +23,15 @@ public:
 	// Digital 10  M2PWM    	 Motor 2 *speed input
 	// Digital 11  Timer2 Library
 	// Digital 12  M1_ENCODER_A  Motor 1 *encoder input A
-	static const unsigned char ML_ENCODER_A = 12;
+	static const unsigned char ML_ENCODER_A = 13;
 	// static const unsigned char UL_LEFT_TRIG = 13;
 
 	// Analog Pins
 	static const unsigned char IRS_FL = A2;
-	static const unsigned char IRS_FM = A1;
+	static const unsigned char IRS_FM = A4;
 	static const unsigned char IRS_FR = A3;
 	static const unsigned char IRS_F = A0;
-	static const unsigned char IRS_R = A4;
+	static const unsigned char IRS_R = A1;
 
 	// static const unsigned char IR_LONG_F = A4;
 	static const unsigned char IRL = A5;

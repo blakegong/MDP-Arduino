@@ -25,8 +25,8 @@ int MotionController::calibratePos(int grids) {
 	bool isFirstTime = true;
 	switch (grids) {
 	case 1:
-		lTarget = 615;
-		rTarget = 602;
+		lTarget = 595;
+		rTarget = 607;
 		break;
 	case 2:
 		lTarget = 305;
@@ -51,7 +51,7 @@ int MotionController::calibratePos(int grids) {
 		motorShield.setBrakes(400, 400);
 		delay(5);
 		count++;
-	} while ((abs(l) > 3) || (abs(r) > 3) || (count < 40));
+	} while (((abs(l) > 3) || (abs(r) > 3)) && (count < 200));
 	MotionController::MLCount = 0;
 	MotionController::MRCount = 0;
 	return value;
@@ -123,25 +123,25 @@ void MotionController::moveTicks(long ticks, bool isForward) {
 	}
 
 	long prevCount = MotionController::MLCount + MotionController::MRCount;
-	for (int i = 0; i < 20; i++) {
-		if (isForward) {
-			motorShield.setSpeeds(80 + this->OutputLeft - this->OutputRight, 80 - this->OutputLeft + this->OutputRight);
-		} else {
-			motorShield.setSpeeds(-80 - this->OutputLeft + this->OutputRight, -80 + this->OutputLeft - this->OutputRight);
-		}
+	// for (int i = 0; i < 20; i++) {
+	// 	if (isForward) {
+	// 		motorShield.setSpeeds(80 + this->OutputLeft - this->OutputRight, 80 - this->OutputLeft + this->OutputRight);
+	// 	} else {
+	// 		motorShield.setSpeeds(-80 - this->OutputLeft + this->OutputRight, -80 + this->OutputLeft - this->OutputRight);
+	// 	}
 
-		updatePid();
-	}
+	// 	updatePid();
+	// }
 
-	for (int i = 0; i < 10; i++) {
-		if (isForward) {
-			motorShield.setSpeeds(150 + this->OutputLeft - this->OutputRight, 150 - this->OutputLeft + this->OutputRight);
-		} else {
-			motorShield.setSpeeds(-150 - this->OutputLeft + this->OutputRight, -150 + this->OutputLeft - this->OutputRight);
-		}
+	// for (int i = 0; i < 10; i++) {
+	// 	if (isForward) {
+	// 		motorShield.setSpeeds(150 + this->OutputLeft - this->OutputRight, 150 - this->OutputLeft + this->OutputRight);
+	// 	} else {
+	// 		motorShield.setSpeeds(-150 - this->OutputLeft + this->OutputRight, -150 + this->OutputLeft - this->OutputRight);
+	// 	}
 
-		updatePid();
-	}
+	// 	updatePid();
+	// }
 
 	while (MotionController::MLCount + MotionController::MRCount - prevCount < 2 * (ticks - brakeTicks)) {
 		// Take care of this line.

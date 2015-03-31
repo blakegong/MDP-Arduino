@@ -30,7 +30,7 @@ public:
 private:
     static const double kp = 0.5, ki = 0.25, kd = 0;
     static volatile long MLCount, MRCount;
-    static const int setSpeed = 350;
+    static const int setSpeed = 150;
     int forwardTicks, backwardTicks, clockwiseTicks, antiClockwiseTicks;
     
     SensorController* sensorController;

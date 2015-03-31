@@ -36,6 +36,7 @@ void FlowController::executeCommand() {
 					motionController->calibratePos(amount);
 					break;
 				case 'S':
+					sensorController->printSensorRawData();
 					state = FlowController::writeSerialState;
 					break;
 				}
@@ -187,18 +188,18 @@ void FlowController::warmUp() {
 			motionController->setAntiClockwiseTicks(antiClockwiseTicks);
 
 			motionController->turn(false);
-			// delay(500);
+			delay(500);
 			caliResult = motionController->calibratePos(1);
-			// delay(200);
+			delay(200);
 			if (caliResult > 0)
 				antiClockwiseTicks += offset;
 			else
 				antiClockwiseTicks -= offset;
 
 			motionController->turn(true);
-			// delay(500);
+			delay(500);
 			caliResult = motionController->calibratePos(1);
-			// delay(200);
+			delay(200);
 			if (caliResult < 0)
 				clockwiseTicks += offset;
 			else
@@ -220,6 +221,8 @@ void FlowController::warmUp() {
 void FlowController::writeSerial() {
 	while (state == FlowController::writeSerialState) {
 		sensorController->printSensorFeedback();
+		Serial.println();
+		Serial.flush();
 		state = FlowController::fetchSerialState;
 	}
 }

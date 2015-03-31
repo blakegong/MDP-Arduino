@@ -16,7 +16,7 @@ void SensorController::initIR() {
 }
 
 void SensorController::initServo() {
-    // this->servo.attach(5);
+    this->servo.attach(5);
 }
 
 void SensorController::printSensorFeedback() {
@@ -51,8 +51,15 @@ void SensorController::printSensorFeedback() {
     char output[7] = {'p', 48 + sfl, 48 + sfm, 48 + sfr, 48 + f_l, 48 + (f_r > 0 ? f_r : sr), '\0'};
     Serial.print(output);
 
-    Serial.println();
-    Serial.flush();
+}
+
+void SensorController::printSensorRawData() {
+    Serial.print("FL: ");
+    Serial.print(this->getAnalogReading(Constants::IRS_FL));
+    Serial.print(" FM: ");
+    Serial.print(this->getAnalogReading(Constants::IRS_FM));
+    Serial.print(" FR: ");
+    Serial.print(this->getAnalogReading(Constants::IRS_FR));
 }
 
 unsigned char SensorController::getIRGrids(unsigned char pin) {
@@ -145,19 +152,19 @@ int SensorController::getAnalogReading(unsigned char pin) {
 }
 
 void SensorController::setServo(unsigned char direction) {
-    // switch (direction) {
-    // case Constants::DIRECT_F:
-    //     servo.write(90);
-    //     servo.write(90);
-    //     break;
-    // case Constants::DIRECT_L:
-    //     servo.write(0);
-    //     servo.write(0);
-    //     break;
-    // case Constants::DIRECT_R:
-    //     servo.write(180);
-    //     servo.write(180);
-    //     break;
-    // }
+    switch (direction) {
+    case Constants::DIRECT_F:
+        servo.write(90);
+        servo.write(90);
+        break;
+    case Constants::DIRECT_L:
+        servo.write(0);
+        servo.write(0);
+        break;
+    case Constants::DIRECT_R:
+        servo.write(180);
+        servo.write(180);
+        break;
+    }
     this->servoDirection = direction;
 }

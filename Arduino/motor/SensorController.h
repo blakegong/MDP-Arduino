@@ -2,13 +2,14 @@
 #define SENSORCONTROLLER_H
 
 #include "Arduino.h"
-// #include <ServoTimer2.h>
+#include <ServoTimer2.h>
 
 class SensorController {
 public:
 	SensorController();
 	int getAnalogReading(unsigned char pin);
 	void printSensorFeedback();
+	void printSensorRawData();
 	unsigned char getIRGrids(unsigned char pin);
 	int getUl(unsigned char ulPwm, unsigned char ulTrig);
 	float getUlCM(unsigned char ulPwm, unsigned char ulTrig);
@@ -17,7 +18,7 @@ public:
 private:
 	float getIRLongCM(unsigned char pin);
 	float getIRShortCM(unsigned char pin);
-	// ServoTimer2 servo;
+	ServoTimer2 servo;
 	void initIR();
 	void initUltrasonic();
 	void initServo();
