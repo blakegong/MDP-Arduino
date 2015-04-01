@@ -8,7 +8,7 @@ void setup()
 {
     Serial.begin(9600);
     Serial.setTimeout(2);
-    myservo.attach(9, 580, 2340);
+    myservo.attach(5, 580, 2340);
 }
 
 void loop() {

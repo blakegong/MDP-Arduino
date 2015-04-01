@@ -56,8 +56,9 @@ The pulse width timing is accurate to within 1%
 #include <wiring_private.h>
 #include <Arduino.h>
 
-#define MIN_PULSE_WIDTH  750
-#define MAX_PULSE_WIDTH 2250
+#define MIN_PULSE_WIDTH  500
+#define MAX_PULSE_WIDTH 2320
+
 #define DEFAULT_PULSE_WIDTH  1000
 #define FRAME_SYNC_PERIOD   20000
 #define NBR_CHANNELS 8

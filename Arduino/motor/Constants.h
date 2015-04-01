@@ -30,11 +30,10 @@ public:
 	static const unsigned char IRS_FL = A2;
 	static const unsigned char IRS_FM = A4;
 	static const unsigned char IRS_FR = A3;
-	static const unsigned char IRS_F = A0;
-	static const unsigned char IRS_R = A1;
+	static const unsigned char IRS = A0;
 
 	// static const unsigned char IR_LONG_F = A4;
-	static const unsigned char IRL = A5;
+	static const unsigned char IRL = A1;
 
 	static const bool isDebug = false;
 

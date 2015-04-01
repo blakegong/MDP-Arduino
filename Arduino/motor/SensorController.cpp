@@ -11,44 +11,45 @@ void SensorController::initIR() {
     pinMode(Constants::IRS_FL, INPUT);
     pinMode(Constants::IRS_FM, INPUT);
     pinMode(Constants::IRS_FR, INPUT);
-    pinMode(Constants::IRS_F, INPUT);
-    pinMode(Constants::IRS_F, INPUT);
+    pinMode(Constants::IRS, INPUT);
+    pinMode(Constants::IRL, INPUT);
 }
 
 void SensorController::initServo() {
-    this->servo.attach(5);
+    this->servo.attach(Constants::SERVO);
 }
 
 void SensorController::printSensorFeedback() {
-    unsigned char sf, l, f_l, f_r = 0;
+    unsigned char l, r, irs, irl;
     unsigned char sfl = this->getIRGrids(Constants::IRS_FL);
     unsigned char sfm = this->getIRGrids(Constants::IRS_FM);
     unsigned char sfr = this->getIRGrids(Constants::IRS_FR);
-    unsigned char sr = this->getIRGrids(Constants::IRS_R);
 
     if (this->servoDirection == Constants::DIRECT_L) {
-        sf = this->getIRGrids(Constants::IRS_F);
-        l = this->getIRGrids(Constants::IRL);
-        f_l = (sf >= 3 ? l : sf);
-        if (sr > 1) {
-            this->setServo(Constants::DIRECT_R);
-            sf = this->getIRGrids(Constants::IRS_F);
-            l = this->getIRGrids(Constants::IRL);
-            f_r = (sf >= 3 ? l : sf);
-        }
-    } else {
-        if (sr > 1) {
-            sf = this->getIRGrids(Constants::IRS_F);
-            l = this->getIRGrids(Constants::IRL);
-            f_r = (sf >= 3 ? l : sf);
-        }
         this->setServo(Constants::DIRECT_L);
-        sf = this->getIRGrids(Constants::IRS_F);
-        l = this->getIRGrids(Constants::IRL);
-        f_l = (sf >= 3 ? l : sf);
+        delay(100);
+        irs = this->getIRGrids(Constants::IRS);
+        irl = this->getIRGrids(Constants::IRL);
+        l = irs > 2 ? irl : irs;
+        this->setServo(Constants::DIRECT_R);
+        delay(1000);
+        irs = this->getIRGrids(Constants::IRS);
+        irl = this->getIRGrids(Constants::IRL);
+        r = irs > 2 ? irl : irs;
+    } else {
+        this->setServo(Constants::DIRECT_R);
+        delay(100);
+        irs = this->getIRGrids(Constants::IRS);
+        irl = this->getIRGrids(Constants::IRL);
+        r = irs > 2 ? irl : irs;
+        this->setServo(Constants::DIRECT_L);
+        delay(1000);
+        irs = this->getIRGrids(Constants::IRS);
+        irl = this->getIRGrids(Constants::IRL);
+        l = irs > 2 ? irl : irs;
     }
 
-    char output[7] = {'p', 48 + sfl, 48 + sfm, 48 + sfr, 48 + f_l, 48 + (f_r > 0 ? f_r : sr), '\0'};
+    char output[7] = {'p', 48 + sfl, 48 + sfm, 48 + sfr, 48 + l, 48 + r, '\0'};
     Serial.print(output);
 
 }
@@ -96,7 +97,7 @@ unsigned char SensorController::getIRGrids(unsigned char pin) {
         //     return 3;
         else
             return 9;
-    case Constants::IRS_F:
+    case Constants::IRS:
         if (reading > 530)
             return 1;
         else if (reading > 265)
@@ -107,9 +108,6 @@ unsigned char SensorController::getIRGrids(unsigned char pin) {
             return 4;
         else
             return 9;
-    case Constants::IRS_R:
-        if (reading > 530)
-            return 1;
     case Constants::IRL:
         if (reading > 540)
             return 2;
@@ -153,17 +151,13 @@ int SensorController::getAnalogReading(unsigned char pin) {
 
 void SensorController::setServo(unsigned char direction) {
     switch (direction) {
-    case Constants::DIRECT_F:
-        servo.write(90);
-        servo.write(90);
-        break;
     case Constants::DIRECT_L:
         servo.write(0);
         servo.write(0);
         break;
     case Constants::DIRECT_R:
-        servo.write(180);
-        servo.write(180);
+        servo.write(9999);
+        servo.write(9999);
         break;
     }
     this->servoDirection = direction;

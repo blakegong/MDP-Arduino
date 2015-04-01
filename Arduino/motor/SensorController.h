@@ -14,11 +14,12 @@ public:
 	int getUl(unsigned char ulPwm, unsigned char ulTrig);
 	float getUlCM(unsigned char ulPwm, unsigned char ulTrig);
 	void setServo(unsigned char direction);
+	ServoTimer2 servo;
 
 private:
 	float getIRLongCM(unsigned char pin);
 	float getIRShortCM(unsigned char pin);
-	ServoTimer2 servo;
+	
 	void initIR();
 	void initUltrasonic();
 	void initServo();
