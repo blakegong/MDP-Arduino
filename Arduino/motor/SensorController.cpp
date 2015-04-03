@@ -27,23 +27,23 @@ void SensorController::printSensorFeedback() {
 
     if (this->servoDirection == Constants::DIRECT_L) {
         this->setServo(Constants::DIRECT_L);
-        delay(100);
+        // delay(100);
         irs = this->getIRGrids(Constants::IRS);
         irl = this->getIRGrids(Constants::IRL);
         l = irs > 2 ? irl : irs;
         this->setServo(Constants::DIRECT_R);
-        delay(1000);
+        delay(700);
         irs = this->getIRGrids(Constants::IRS);
         irl = this->getIRGrids(Constants::IRL);
         r = irs > 2 ? irl : irs;
     } else {
         this->setServo(Constants::DIRECT_R);
-        delay(100);
+        // delay(100);
         irs = this->getIRGrids(Constants::IRS);
         irl = this->getIRGrids(Constants::IRL);
         r = irs > 2 ? irl : irs;
         this->setServo(Constants::DIRECT_L);
-        delay(1000);
+        delay(700);
         irs = this->getIRGrids(Constants::IRS);
         irl = this->getIRGrids(Constants::IRL);
         l = irs > 2 ? irl : irs;
@@ -51,6 +51,11 @@ void SensorController::printSensorFeedback() {
 
     char output[7] = {'p', 48 + sfl, 48 + sfm, 48 + sfr, 48 + l, 48 + r, '\0'};
     Serial.print(output);
+
+    if (servoDirection == Constants::DIRECT_L)
+        Serial.print(" Servo to the left");
+    else
+        Serial.print(" Servo to the right");
 
 }
 
@@ -61,66 +66,57 @@ void SensorController::printSensorRawData() {
     Serial.print(this->getAnalogReading(Constants::IRS_FM));
     Serial.print(" FR: ");
     Serial.print(this->getAnalogReading(Constants::IRS_FR));
+    Serial.print(" Servo S: ");
+    Serial.print(this->getAnalogReading(Constants::IRS));
+    Serial.print(" Servo L: ");
+    Serial.print(this->getAnalogReading(Constants::IRL));
+    Serial.println();
 }
 
 unsigned char SensorController::getIRGrids(unsigned char pin) {
     int reading = this->getAnalogReading(pin);
     switch (pin) {
     case Constants::IRS_FL:
-        if (reading > 415)
+        if (reading > 385)
             return 1;
-        else if (reading > 245)
+        else if (reading > 223)
             return 2;
-        // else if (reading > 165)
-        //     return 3;
-        // else if (reading > 110)
-        //     return 4;
         else
             return 9;
     case Constants::IRS_FM:
-        if (reading > 450)
+        if (reading > 389)
             return 1;
-        else if (reading > 260)
+        else if (reading > 227)
             return 2;
-        // else if (reading > 160)
-        //     return 3;
-        // else if (reading > 110)
-        //     return 4;
         else
             return 9;
     case Constants::IRS_FR:
-        if (reading > 410)
+        if (reading > 394)
             return 1;
-        else if (reading > 235)
+        else if (reading > 233)
             return 2;
-        // else if (reading > 175)
-        //     return 3;
         else
             return 9;
     case Constants::IRS:
-        if (reading > 530)
+        if (reading > 247)
             return 1;
-        else if (reading > 265)
+        else if (reading > 155)
             return 2;
-        else if (reading > 160)
-            return 3;
-        else if (reading > 120)
-            return 4;
         else
             return 9;
     case Constants::IRL:
-        if (reading > 540)
+        if (reading > 408)
             return 2;
-        else if (reading > 415)
+        else if (reading > 300)
             return 3;
-        else if (reading > 320)
-            return 4;
         else if (reading > 245)
+            return 4;
+        else if (reading > 200)
             return 5;
-        // else if (reading > 190)
-        //     return 6;
-        else
+        else if (reading > 160)
             return 6;
+        else
+            return 9;
     }
 }
 
@@ -152,12 +148,12 @@ int SensorController::getAnalogReading(unsigned char pin) {
 void SensorController::setServo(unsigned char direction) {
     switch (direction) {
     case Constants::DIRECT_L:
-        servo.write(0);
-        servo.write(0);
+        servo.write(9999);
+        servo.write(9999);
         break;
     case Constants::DIRECT_R:
-        servo.write(9999);
-        servo.write(9999);
+        servo.write(0);
+        servo.write(0);
         break;
     }
     this->servoDirection = direction;

@@ -27,13 +27,13 @@ public:
 	// static const unsigned char UL_LEFT_TRIG = 13;
 
 	// Analog Pins
-	static const unsigned char IRS_FL = A2;
+	static const unsigned char IRS_FL = A3;
 	static const unsigned char IRS_FM = A4;
-	static const unsigned char IRS_FR = A3;
+	static const unsigned char IRS_FR = A1;
 	static const unsigned char IRS = A0;
 
 	// static const unsigned char IR_LONG_F = A4;
-	static const unsigned char IRL = A1;
+	static const unsigned char IRL = A2;
 
 	static const bool isDebug = false;
 

@@ -29,7 +29,10 @@ private:
     static volatile long MLCount, MRCount;
     static const int setSpeed = 150;
     int clockwiseTicks, antiClockwiseTicks;
-    int forwardTicks [15];
+    int forwardTicks [20];
+    int lTarget [4];
+    int mTarget [4];
+    int rTarget [4];
     DualVNH5019MotorShield motorShield;
     SensorController* sensorController;
     unsigned char direction; // 0:F 1:R 2:B 3:L

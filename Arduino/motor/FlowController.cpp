@@ -162,6 +162,11 @@ void FlowController::waitForStart() {
 void FlowController::writeSerial() {
 	while (state == FlowController::writeSerialState) {
 		sensorController->printSensorFeedback();
+		Serial.print(" X: ");
+		Serial.print(motionController->getPosX());
+		Serial.print(" Y: ");
+		Serial.print(motionController->getPosY());
+		
 		Serial.println();
 		Serial.flush();
 		state = FlowController::fetchSerialState;
