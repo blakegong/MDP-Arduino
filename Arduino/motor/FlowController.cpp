@@ -10,6 +10,12 @@ void FlowController::executeCommand() {
 	while (state == FlowController::executeCommandState) {
 		int count = 0, amount = 0;
 		unsigned char movement = 0;
+		if (command[0] == 'O') {
+			sensorController->setServoRead(false);
+			count++;
+		} else {
+			sensorController->setServoRead(true);
+		}
 		while (command[count] != 10 && command[count] != 0) {
 			if (command[count] >= 48 && command[count] <= 57)
 				amount = amount * 10 + command[count] - 48;
@@ -25,12 +31,18 @@ void FlowController::executeCommand() {
 					motionController->moveBackwardGrids(amount);
 					break;
 				case 'C':
-					for (int i = 0; i < amount; i++)
+					for (int i = 0; i < amount; i++) {
+						if (i > 0)
+							delay(300);
 						motionController->turn(true);
+					}
 					break;
 				case 'A':
-					for (int i = 0; i < amount; i++)
+					for (int i = 0; i < amount; i++) {
+						if (i > 0)
+							delay(300);
 						motionController->turn(false);
+					}
 					break;
 				case 'Z':
 					motionController->calibratePos(amount, true);
@@ -44,10 +56,16 @@ void FlowController::executeCommand() {
 				case 'X':
 					motionController->calibrateMove(amount);
 					break;
+				case 'Y':
+					motionController->calibratePos(amount, true, false);
+					break;
+				case 'D':
+					delay(100);
+					break;
 				}
 				amount = 0;
+				// delay(50);
 			}
-
 			count++;
 		}
 
@@ -109,9 +127,9 @@ void FlowController::startFSM() {
 
 void FlowController::test() {
 	for (int i = 0; i < 3; i++) {
-		sensorController->servo.write(9999);
-		delay(3000);
-		sensorController->servo.write(0);
+		// sensorController->servo.write(9999);
+		// delay(3000);
+		// sensorController->servo.write(0);
 		// for(int i = 0; i < 400; i++) {
 		// 	motionController->motorShield.setSpeeds(i, i);
 		// 	// motionController->motorShield.setM1Speed(i);
@@ -131,11 +149,29 @@ void FlowController::test() {
 
 		// Serial.print("pIR Short Front Middle Reading: ");
 		// Serial.print(sensorController->getAnalogReading(Constants::IR_SHORT_FM));
-		Serial.print("IR Short Front Left Reading: ");
-		Serial.print(sensorController->getAnalogReading(Constants::IRS_FL));
-		Serial.print("IR Short Front Right Reading: ");
-		Serial.println(sensorController->getAnalogReading(Constants::IRS_FR));
-		delay(3000);
+		// Serial.print("IR Short Front Left Reading: ");
+		// Serial.print(sensorController->getAnalogReading(Constants::IRS_FL));
+		// Serial.print("IR Short Front Right Reading: ");
+		// Serial.println(sensorController->getAnalogReading(Constants::IRS_FR));
+		// delay(3000);
+		// for (int i = 0; i < 100; i++) {
+		// 	motionController->motorShield.setSpeeds(100, -100);
+		// 	delay(5);
+		// 	motionController->motorShield.setBrakes(400, 400);
+		// 	delay(5);
+		// }
+		// for (int i = 0; i < 100; i++) {
+		// 	motionController->motorShield.setSpeeds(200, -200);
+		// 	delay(5);
+		// 	motionController->motorShield.setBrakes(400, 400);
+		// 	delay(5);
+		// }
+		for (int i = 0; i < 100; i++) {
+			motionController->motorShield.setSpeeds(-30, 30);
+			delay(5);
+			motionController->motorShield.setBrakes(400, 400);
+			delay(5);
+		}
 	}
 	while (true) {}
 }
@@ -166,8 +202,27 @@ void FlowController::writeSerial() {
 		Serial.print(motionController->getPosX());
 		Serial.print(" Y: ");
 		Serial.print(motionController->getPosY());
-		
+		Serial.print(" D: ");
+		switch (motionController->getDirection()) {
+		case Constants::DIRECT_F:
+			Serial.print("F");
+			break;
+		case Constants::DIRECT_R:
+			Serial.print("R");
+			break;
+		case Constants::DIRECT_B:
+			Serial.print("B");
+			break;
+		case Constants::DIRECT_L:
+			Serial.print("L");
+			break;
+		}
+
+
 		Serial.println();
+
+		sensorController->printSensorRawData();
+
 		Serial.flush();
 		state = FlowController::fetchSerialState;
 	}

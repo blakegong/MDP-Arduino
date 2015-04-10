@@ -24,38 +24,42 @@ void SensorController::printSensorFeedback() {
     unsigned char sfl = this->getIRGrids(Constants::IRS_FL);
     unsigned char sfm = this->getIRGrids(Constants::IRS_FM);
     unsigned char sfr = this->getIRGrids(Constants::IRS_FR);
-
-    if (this->servoDirection == Constants::DIRECT_L) {
-        this->setServo(Constants::DIRECT_L);
-        // delay(100);
-        irs = this->getIRGrids(Constants::IRS);
-        irl = this->getIRGrids(Constants::IRL);
-        l = irs > 2 ? irl : irs;
-        this->setServo(Constants::DIRECT_R);
-        delay(700);
-        irs = this->getIRGrids(Constants::IRS);
-        irl = this->getIRGrids(Constants::IRL);
-        r = irs > 2 ? irl : irs;
+    if (this->isServoRead) {
+        if (this->servoDirection == Constants::DIRECT_L) {
+            this->setServo(Constants::DIRECT_L);
+            delay(10);
+            irs = this->getIRGrids(Constants::IRS);
+            irl = this->getIRGrids(Constants::IRL);
+            l = irs > 1 ? irl : irs;
+            this->setServo(Constants::DIRECT_R);
+            delay(750);
+            irs = this->getIRGrids(Constants::IRS);
+            irl = this->getIRGrids(Constants::IRL);
+            r = irs > 1 ? irl : irs;
+        } else {
+            this->setServo(Constants::DIRECT_R);
+            delay(10);
+            irs = this->getIRGrids(Constants::IRS);
+            irl = this->getIRGrids(Constants::IRL);
+            r = irs > 1 ? irl : irs;
+            this->setServo(Constants::DIRECT_L);
+            delay(750);
+            irs = this->getIRGrids(Constants::IRS);
+            irl = this->getIRGrids(Constants::IRL);
+            l = irs > 1 ? irl : irs;
+        }
     } else {
-        this->setServo(Constants::DIRECT_R);
-        // delay(100);
-        irs = this->getIRGrids(Constants::IRS);
-        irl = this->getIRGrids(Constants::IRL);
-        r = irs > 2 ? irl : irs;
-        this->setServo(Constants::DIRECT_L);
-        delay(700);
-        irs = this->getIRGrids(Constants::IRS);
-        irl = this->getIRGrids(Constants::IRL);
-        l = irs > 2 ? irl : irs;
+        l = 8;
+        r = 8;
     }
 
     char output[7] = {'p', 48 + sfl, 48 + sfm, 48 + sfr, 48 + l, 48 + r, '\0'};
     Serial.print(output);
 
     if (servoDirection == Constants::DIRECT_L)
-        Serial.print(" Servo to the left");
+        Serial.print(" Servo: L");
     else
-        Serial.print(" Servo to the right");
+        Serial.print(" Servo: R");
 
 }
 
@@ -77,23 +81,23 @@ unsigned char SensorController::getIRGrids(unsigned char pin) {
     int reading = this->getAnalogReading(pin);
     switch (pin) {
     case Constants::IRS_FL:
-        if (reading > 385)
+        if (reading > 373)
             return 1;
-        else if (reading > 223)
+        else if (reading > 225)
             return 2;
         else
             return 9;
     case Constants::IRS_FM:
-        if (reading > 389)
+        if (reading > 384)
             return 1;
-        else if (reading > 227)
+        else if (reading > 225)
             return 2;
         else
             return 9;
     case Constants::IRS_FR:
-        if (reading > 394)
+        if (reading > 377)
             return 1;
-        else if (reading > 233)
+        else if (reading > 230)
             return 2;
         else
             return 9;
@@ -105,16 +109,16 @@ unsigned char SensorController::getIRGrids(unsigned char pin) {
         else
             return 9;
     case Constants::IRL:
-        if (reading > 408)
+        if (reading > 404)
             return 2;
-        else if (reading > 300)
+        else if (reading > 310)
             return 3;
         else if (reading > 245)
             return 4;
-        else if (reading > 200)
+        else if (reading > 205)
             return 5;
-        else if (reading > 160)
-            return 6;
+        // else if (reading > 160)
+        //     return 6;
         else
             return 9;
     }
@@ -157,4 +161,8 @@ void SensorController::setServo(unsigned char direction) {
         break;
     }
     this->servoDirection = direction;
+}
+
+void SensorController::setServoRead(bool isServoRead) {
+    this->isServoRead = isServoRead;
 }

@@ -14,6 +14,7 @@ public:
 	int getUl(unsigned char ulPwm, unsigned char ulTrig);
 	float getUlCM(unsigned char ulPwm, unsigned char ulTrig);
 	void setServo(unsigned char direction);
+	void setServoRead(bool isServoRead);
 	ServoTimer2 servo;
 
 private:
@@ -24,6 +25,7 @@ private:
 	void initUltrasonic();
 	void initServo();
 	unsigned char servoDirection;
+	bool isServoRead;
 };
 
 #endif
